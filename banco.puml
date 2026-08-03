@@ -1,0 +1,30 @@
+@startuml
+
+entity "Produtor" {
+  * id : int
+  --
+  nome : varchar
+  cpf : varchar
+  telefone : varchar
+}
+
+entity "Pesagem" {
+  * id : int
+  --
+  data : date
+  pesoKg : decimal
+  arrobas : decimal
+}
+
+entity "Insumos" {
+  * id : int
+  --
+  nome : varchar
+  quantidade : int
+  valor : decimal
+}
+
+Produtor ||--o{ Pesagem
+Produtor ||--o{ Insumos
+
+@enduml
