@@ -43,6 +43,9 @@ Rel(backend_api, cache, "Lê e grava cache em", "Redis Protocol")
 
 Rel(backend_api, pagamentos, "Solicita cobrança em", "JSON/HTTPS")
 Rel(backend_api, logistica, "Solicita etiquetas e rastreio em", "JSON/HTTPS")
-Rel(backend_api, notificacoes, "Dispara e-mails via", "REST / SMTP")
-
+Rel(backend_api, notificacoes, "Dispara e-mails via", "REST / SMTP");
+<<<<<<< HEAD
 @enduml
+=======
+@enduml
+>>>>>>> 28489b898084cdecfa1b2db99c58fa79cc520b99
