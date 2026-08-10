@@ -1,0 +1,48 @@
+@startuml Diagrama_de_Container
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+' Título do Diagrama C4 Container
+title Diagrama de Containers - Sistema de Vendas Online
+
+' Pessoas / Atores
+Person(cliente, "Cliente", "Acessa a plataforma para navegar pelo catálogo e realizar compras.")
+Person(admin, "Administrador", "Gerencia produtos, estoque e relatórios das vendas.")
+
+' Sistemas Externos
+System_Ext(pagamentos, "Gateway de Pagamento", "Processa pagamentos via cartão de crédito, PIX e boleto.")
+System_Ext(logistica, "Sistema de Logística", "Gera etiquetas de envio e rastreamento de entregas.")
+System_Ext(notificacoes, "Serviço de E-mail / Push", "Envia notificações operacionais aos clientes.")
+
+' Limite da Aplicação (O Sistema de Vendas)
+System_Boundary(sistema, "Sistema de Vendas Online") {
+    Container(web_app, "Single-Page Application", "React / HTML / JS", "Interface do cliente para navegação e checkout no navegador.")
+    Container(mobile_app, "Mobile App", "React Native", "Aplicativo móvel para clientes navegarem e comprarem.")
+    Container(spa_admin, "Painel Administrativo", "Vue.js", "Interface web para a gestão interna da loja.")
+    
+    Container(api_gateway, "API Gateway", "Kong / Nginx", "Ponto único de entrada, roteia requisições, faz autenticação e rate limiting.")
+    
+    Container(backend_api, "API de Negócios (Backend)", "Python / Flask", "Processa as regras de negócio de pedidos, produtos e usuários.")
+    
+    ContainerDb(database, "Banco de Dados Relacional", "PostgreSQL", "Armazena dados de clientes, produtos, pedidos e transações.")
+    ContainerDb(cache, "Cache em Memória", "Redis", "Cache de sessões de usuário e catálogo de produtos para alta performance.")
+}
+
+' Relacionamentos
+Rel(cliente, web_app, "Usa", "HTTPS")
+Rel(cliente, mobile_app, "Usa", "HTTPS")
+Rel(admin, spa_admin, "Usa", "HTTPS")
+
+Rel(web_app, api_gateway, "Realiza chamadas de API", "JSON/HTTPS")
+Rel(mobile_app, api_gateway, "Realiza chamadas de API", "JSON/HTTPS")
+Rel(spa_admin, api_gateway, "Realiza chamadas de API", "JSON/HTTPS")
+
+Rel(api_gateway, backend_api, "Roteia requisições para", "gRPC / HTTP")
+
+Rel(backend_api, database, "Lê e escreve dados em", "SQL / TCP")
+Rel(backend_api, cache, "Lê e grava cache em", "Redis Protocol")
+
+Rel(backend_api, pagamentos, "Solicita cobrança em", "JSON/HTTPS")
+Rel(backend_api, logistica, "Solicita etiquetas e rastreio em", "JSON/HTTPS")
+Rel(backend_api, notificacoes, "Dispara e-mails via", "REST / SMTP")
+
+@enduml
