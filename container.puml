@@ -1,51 +1,44 @@
-@startuml Diagrama_de_Container
+@startuml Diagrama_de_Container_Piscicultura
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
-' Título do Diagrama C4 Container
-title Diagrama de Containers - Sistema de Vendas Online
+title Diagrama de Containers - Sistema de Biometria e Custo Alimentar (Piscicultura)
 
 ' Pessoas / Atores
-Person(cliente, "Cliente", "Acessa a plataforma para navegar pelo catálogo e realizar compras.")
-Person(admin, "Administrador", "Gerencia produtos, estoque e relatórios das vendas.")
+Person(produtor, "Produtor Rural / Piscicultor", "Realiza a biometria dos peixes no tanque e acompanha o consumo de ração.")
+Person(veterinario, "Zootecnista / Veterinário", "Analisa os dados de crescimento e ajusta as tabelas nutricionais de trato.")
 
 ' Sistemas Externos
-System_Ext(pagamentos, "Gateway de Pagamento", "Processa pagamentos via cartão de crédito, PIX e boleto.")
-System_Ext(logistica, "Sistema de Logística", "Gera etiquetas de envio e rastreamento de entregas.")
-System_Ext(notificacoes, "Serviço de E-mail / Push", "Envia notificações operacionais aos clientes.")
+System_Ext(clima_api, "API de Previsão do Tempo", "Fornece dados de temperatura local (essencial para calcular a taxa de alimentação dos peixes).")
+System_Ext(notificacoes, "Serviço de Alertas", "Dispara avisos via WhatsApp/E-mail sobre a hora correta do trato ou desvios de crescimento.")
 
-' Limite da Aplicação (O Sistema de Vendas)
-System_Boundary(sistema, "Sistema de Vendas Online") {
-    Container(web_app, "Single-Page Application", "React / HTML / JS", "Interface do cliente para navegação e checkout no navegador.")
-    Container(mobile_app, "Mobile App", "React Native", "Aplicativo móvel para clientes navegarem e comprarem.")
-    Container(spa_admin, "Painel Administrativo", "Vue.js", "Interface web para a gestão interna da loja.")
+' Limite da Aplicação (O Sistema de Monitoramento)
+System_Boundary(sistema_piscicultura, "Sistema de Gestão Biométrica e Alimentar") {
     
-    Container(api_gateway, "API Gateway", "Kong / Nginx", "Ponto único de entrada, roteia requisições, faz autenticação e rate limiting.")
+    Container(web_app, "Painel Web Admnistrativo", "HTML5 / CSS3 / JavaScript", "Interface para visualização de relatórios de custos, gráficos de biomassa e histórico de lotes.")
     
-    Container(backend_api, "API de Negócios (Backend)", "Python / Flask", "Processa as regras de negócio de pedidos, produtos e usuários.")
+    Container(mobile_app, "Aplicativo Mobile de Campo", "HTML / JS (PWA/Cordova)", "Interface simples para o produtor lançar o peso das amostras de peixes diretamente na beira do tanque, mesmo offline.")
     
-    ContainerDb(database, "Banco de Dados Relacional", "PostgreSQL", "Armazena dados de clientes, produtos, pedidos e transações.")
-    ContainerDb(cache, "Cache em Memória", "Redis", "Cache de sessões de usuário e catálogo de produtos para alta performance.")
+    Container(backend_api, "Servidor Backend (API)", "Python / Flask", "Processa as regras de negócio: calcula a biomassa total do tanque e define a quantidade exata de ração diária.")
+    
+    ContainerDb(database, "Banco de Dados Relacional", "PostgreSQL / SQLite", "Armazena dados dos tanques, registros de biometria amostral, quantidade de peixes e estoque de ração.")
+    
+    ContainerDb(cache, "Cache de Tabelas Nutricionais", "Redis", "Armazena em memória as tabelas de taxa de alimentação por espécie e faixa de peso para cálculos rápidos.")
 }
 
-' Relacionamentos
-Rel(cliente, web_app, "Usa", "HTTPS")
-Rel(cliente, mobile_app, "Usa", "HTTPS")
-Rel(admin, spa_admin, "Usa", "HTTPS")
+' Relacionamentos do Usuário com as Interfaces
+Rel(produtor, mobile_app, "Lança biometrias e consulta quantidade de trato via", "HTTPS")
+Rel(veterinario, web_app, "Configura tabelas de alimentação e analisa gráficos via", "HTTPS")
 
-Rel(web_app, api_gateway, "Realiza chamadas de API", "JSON/HTTPS")
-Rel(mobile_app, api_gateway, "Realiza chamadas de API", "JSON/HTTPS")
-Rel(spa_admin, api_gateway, "Realiza chamadas de API", "JSON/HTTPS")
+' Relacionamentos das Interfaces com o Backend
+Rel(web_app, backend_api, "Envia e busca dados gerenciais", "JSON/HTTPS")
+Rel(mobile_app, backend_api, "Sincroniza pesagens e busca dados do tanque", "JSON/HTTPS")
 
-Rel(api_gateway, backend_api, "Roteia requisições para", "gRPC / HTTP")
+' Relacionamentos do Backend com o Banco e Cache
+Rel(backend_api, database, "Lê e escreve dados de pesagem e tanques usando", "SQL / TCP")
+Rel(backend_api, cache, "Busca fatores de conversão alimentar em", "Protocolo Redis")
 
-Rel(backend_api, database, "Lê e escreve dados em", "SQL / TCP")
-Rel(backend_api, cache, "Lê e grava cache em", "Redis Protocol")
+' Relacionamentos do Backend com Sistemas Externos
+Rel(backend_api, clima_api, "Consulta temperatura da água estimada via", "JSON/HTTPS")
+Rel(backend_api, notificacoes, "Solicita envio de alertas de subalimentação via", "REST / HTTP")
 
-Rel(backend_api, pagamentos, "Solicita cobrança em", "JSON/HTTPS")
-Rel(backend_api, logistica, "Solicita etiquetas e rastreio em", "JSON/HTTPS")
-Rel(backend_api, notificacoes, "Dispara e-mails via", "REST / SMTP");
-<<<<<<< HEAD
 @enduml
-=======
-@enduml
->>>>>>> 28489b898084cdecfa1b2db99c58fa79cc520b99
