@@ -1,18 +1,55 @@
 <!DOCTYPE html>
+
 <html lang="pt-br">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Fisher Control</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static',
+        filename='css/style.css') }}"
+    >
+
 </head>
+
 <body>
+
+<header>
+
+    <h1>🐟 Fisher Control</h1>
+
     <nav>
-        <a href="{{ url_for ('index') }}">Home</a> 
-        <a href="{{ url_for ('listar') }}">Filmes</a>
-        <a href="{{ url_for ('cadastrar') }}">Cadastrar</a>
-        <a href="{{ url_for ('sobre') }}">Sobre</a>
+
+        <a href="/">
+            Início
+        </a>
+
+        <a href="/tanques">
+            Tanques
+        </a>
+
+        <a href="/tanques/cadastrar">
+            Cadastrar Tanque
+        </a>
+
     </nav>
-    <hr>
-    {% block content %}{% endblock %}
+
+</header>
+
+<main>
+
+    {% block conteudo %}
+    {% endblock %}
+
+</main>
+
 </body>
+
 </html>

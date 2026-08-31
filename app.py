@@ -35,3 +35,6 @@ def listar_tanques():
     return render_template(
         "tanques.html",
     )
+
+if __name__ == "__main__":
+    app.run(debug=True)
