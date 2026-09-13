@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, redirect
 
 app = Flask(__name__)
 
-# Banco de dados simulado em memória (Lista de dicionários)
 registros_biometria = []
 
 @app.route('/')
@@ -12,7 +11,6 @@ def index():
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
     if request.method == 'POST':
-        # Recebendo os dados do formulário
         tanque = request.form.get('tanque')
         qtd_peixes = int(request.form.get('qtd_peixes'))
         peso_medio = float(request.form.get('peso_medio'))
