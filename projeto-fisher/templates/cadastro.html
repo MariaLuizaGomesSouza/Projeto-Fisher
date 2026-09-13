@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Fisher - Cadastro de Biometria</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Projeto Fisher 🐟</h1>
+        <nav>
+            <a href="/cadastro">Nova Biometria</a>
+            <a href="/listagem">Relatório de Tanques</a>
+        </nav>
+    </header>
+    
+    <main>
+        <h2>Registrar Biometria do Tanque</h2>
+        <form action="/cadastro" method="POST">
+            <label>Identificação do Tanque:</label>
+            <input type="text" name="tanque" required placeholder="Ex: Tanque A">
+
+            <label>Quantidade Estimada de Peixes:</label>
+            <input type="number" name="qtd_peixes" required placeholder="Ex: 500">
+
+            <label>Peso Médio Amostral (em kg):</label>
+            <input type="number" step="0.01" name="peso_medio" required placeholder="Ex: 0.850">
+
+            <label>Taxa de Alimentação (% do peso vivo):</label>
+            <input type="number" step="0.1" name="taxa_racao" required placeholder="Ex: 2.0">
+
+            <button type="submit">Salvar Biometria</button>
+        </form>
+    </main>
+</body>
+</html>
