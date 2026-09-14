@@ -31,9 +31,9 @@ def cadastrar_tanque():
 
 @app.route('/tanques')
 def listar_tanques():
-
     return render_template(
         "tanques.html",
+        tanques=tanques  # Repassa a lista para a tela renderizar
     )
 
 if __name__ == "__main__":

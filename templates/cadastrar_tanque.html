@@ -1,57 +1,25 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block conteudo %}
+{% block content %}
+<div class="card">
+    <h2>Cadastrar Tanque</h2>
+    <form action="{{ url_for('cadastrar_tanque') }}" method="POST">
+        <div class="form-group">
+            <label for="nome">Nome / Identificação do Tanque</label>
+            <input type="text" id="nome" name="nome" placeholder="Ex: Tanque Escavado 01" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="especie">Espécie dos Peixes</label>
+            <input type="text" id="especie" name="especie" placeholder="Ex: Tilápia do Nilo" required>
+        </div>
 
-<h2>Cadastro de Tanque</h2>
+        <div class="form-group">
+            <label for="quantidade">Quantidade de Peixes</label>
+            <input type="number" id="quantidade" name="quantidade" placeholder="Ex: 1500" required>
+        </div>
 
-<p>
-    Cadastre um novo tanque para controlar
-    a produção de peixes.
-</p>
-
-<form method="POST">
-
-    <label for="nome">
-        Nome do tanque:
-    </label>
-
-    <input
-        type="text"
-        id="nome"
-        name="nome"
-        placeholder="Ex: Tanque 01"
-        required
-    >
-
-    <label for="especie">
-        Espécie dos peixes:
-    </label>
-
-    <input
-        type="text"
-        id="especie"
-        name="especie"
-        placeholder="Ex: Tambaqui"
-        required
-    >
-
-    <label for="quantidade">
-        Quantidade de peixes:
-    </label>
-
-    <input
-        type="number"
-        id="quantidade"
-        name="quantidade"
-        min="1"
-        placeholder="Ex: 1000"
-        required
-    >
-
-    <button type="submit">
-        Cadastrar tanque
-    </button>
-
-</form>
-
+        <button type="submit" class="btn">Salvar Tanque</button>
+    </form>
+</div>
 {% endblock %}

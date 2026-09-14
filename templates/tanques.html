@@ -1,58 +1,31 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block conteudo %}
-
-<h2>Tanques cadastrados</h2>
-
-<a href="/tanques/cadastrar">
-    + Cadastrar novo tanque
-</a>
-
-<br><br>
-
-{% if tanques %}
-
-<table>
-
-    <thead>
-
-        <tr>
-            <th>ID</th>
-            <th>Tanque</th>
-            <th>Espécie</th>
-            <th>Quantidade de peixes</th>
-        </tr>
-
-    </thead>
-
-    <tbody>
-
-        {% for tanque in tanques %}
-
-        <tr>
-
-            <td>{{ tanque.id }}</td>
-
-            <td>{{ tanque.nome }}</td>
-
-            <td>{{ tanque.especie }}</td>
-
-            <td>{{ tanque.quantidade }}</td>
-
-        </tr>
-
-        {% endfor %}
-
-    </tbody>
-
-</table>
-
-{% else %}
-
-<p>
-    Nenhum tanque cadastrado.
-</p>
-
-{% endif %}
-
+{% block content %}
+<div class="card">
+    <h2>Tanques Cadastrados</h2>
+    {% if tanques %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Espécie</th>
+                <th>Quantidade</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tanque in tanques %}
+            <tr>
+                <td>{{ tanque.id }}</td>
+                <td>{{ tanque.nome }}</td>
+                <td>{{ tanque.especie }}</td>
+                <td>{{ tanque.quantidade }} peixes</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: var(--text-muted);">Nenhum tanque cadastrado ainda.</p>
+    {% endif %}
+</div>
 {% endblock %}
