@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card">
+    <h2>Editar Tanque #{{ tanque.id }}</h2>
+    <form action="{{ url_for('editar_tanque', tanque_id=tanque.id) }}" method="POST">
+        <div class="form-group">
+            <label for="nome">Nome / Identificação do Tanque</label>
+            <input type="text" id="nome" name="nome" value="{{ tanque.nome }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="especie">Espécie dos Peixes</label>
+            <input type="text" id="especie" name="especie" value="{{ tanque.especie }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="quantidade">Quantidade de Peixes</label>
+            <input type="number" id="quantidade" name="quantidade" value="{{ tanque.quantidade }}" required>
+        </div>
+
+        <button type="submit" class="btn">Salvar Alterações</button>
+        <a href="{{ url_for('listar_tanques') }}" class="btn btn-secondary" style="margin-left: 0.5rem;">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

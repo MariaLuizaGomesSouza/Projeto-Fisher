@@ -11,6 +11,7 @@
                 <th>Nome</th>
                 <th>Espécie</th>
                 <th>Quantidade</th>
+                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
@@ -20,6 +21,13 @@
                 <td>{{ tanque.nome }}</td>
                 <td>{{ tanque.especie }}</td>
                 <td>{{ tanque.quantidade }} peixes</td>
+                <td>
+                    <a href="{{ url_for('editar_tanque', tanque_id=tanque.id) }}" class="btn btn-warning">Editar</a>
+                    
+                    <form action="{{ url_for('deletar_tanque', tanque_id=tanque.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja deletar este tanque?');">
+                        <button type="submit" class="btn btn-danger">Deletar</button>
+                    </form>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
