@@ -1,0 +1,15 @@
+@startuml
+
+start
+
+:Informar peso em kg;
+
+:Calcular arrobas;
+
+:Salvar pesagem;
+
+:Exibir resultado;
+
+stop
+
+@enduml

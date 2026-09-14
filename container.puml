@@ -1,0 +1,26 @@
+@startuml Diagrama_de_Container_Fisher
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Diagrama de Containers - Projeto-Fisher (Estrutura Atual)
+
+' Pessoas / Atores
+Person(produtor, "Produtor / Piscicultor", "Acessa o sistema para visualizar e cadastrar novos tanques de criação.")
+
+' Limite da Aplicação
+System_Boundary(sistema, "Projeto-Fisher") {
+
+    Container(frontend, "Interface Web (Templates)", "HTML / Jinja2", "Páginas visuais renderizadas pelo servidor (base.html, tanques.html, cadastrar_tanque.html) para interação com o usuário.")
+
+    Container(app_backend, "Aplicação Backend (app.py)", "Python / Flask", "Ponto central do sistema. Gerencia as rotas, renderiza as telas e processa os dados de cadastro de tanques.")
+
+    ContainerDb(database, "Banco de Dados", "SQLite", "Armazena as informações dos tanques cadastrados (tabelas em implementação).")
+}
+
+' Relacionamentos
+Rel(produtor, frontend, "Acessa as páginas e preenche formulários", "Navegador Web")
+
+Rel(frontend, app_backend, "Envia requisições e dados inseridos", "HTTP")
+
+Rel(app_backend, database, "Consulta e salva dados dos tanques", "SQL")
+
+@enduml

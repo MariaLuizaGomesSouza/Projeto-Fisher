@@ -1,0 +1,44 @@
+@startuml Diagrama_de_Container_Piscicultura
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Diagrama de Containers - Sistema de Biometria e Custo Alimentar (Piscicultura)
+
+' Pessoas / Atores
+Person(produtor, "Produtor Rural / Piscicultor", "Realiza a biometria dos peixes no tanque e acompanha o consumo de ração.")
+Person(veterinario, "Zootecnista / Veterinário", "Analisa os dados de crescimento e ajusta as tabelas nutricionais de trato.")
+
+' Sistemas Externos
+System_Ext(clima_api, "API de Previsão do Tempo", "Fornece dados de temperatura local (essencial para calcular a taxa de alimentação dos peixes).")
+System_Ext(notificacoes, "Serviço de Alertas", "Dispara avisos via WhatsApp/E-mail sobre a hora correta do trato ou desvios de crescimento.")
+
+' Limite da Aplicação (O Sistema de Monitoramento)
+System_Boundary(sistema_piscicultura, "Sistema de Gestão Biométrica e Alimentar") {
+    
+    Container(web_app, "Painel Web Admnistrativo", "HTML5 / CSS3 / JavaScript", "Interface para visualização de relatórios de custos, gráficos de biomassa e histórico de lotes.")
+    
+    Container(mobile_app, "Aplicativo Mobile de Campo", "HTML / JS (PWA/Cordova)", "Interface simples para o produtor lançar o peso das amostras de peixes diretamente na beira do tanque, mesmo offline.")
+    
+    Container(backend_api, "Servidor Backend (API)", "Python / Flask", "Processa as regras de negócio: calcula a biomassa total do tanque e define a quantidade exata de ração diária.")
+    
+    ContainerDb(database, "Banco de Dados Relacional", "PostgreSQL / SQLite", "Armazena dados dos tanques, registros de biometria amostral, quantidade de peixes e estoque de ração.")
+    
+    ContainerDb(cache, "Cache de Tabelas Nutricionais", "Redis", "Armazena em memória as tabelas de taxa de alimentação por espécie e faixa de peso para cálculos rápidos.")
+}
+
+' Relacionamentos do Usuário com as Interfaces
+Rel(produtor, mobile_app, "Lança biometrias e consulta quantidade de trato via", "HTTPS")
+Rel(veterinario, web_app, "Configura tabelas de alimentação e analisa gráficos via", "HTTPS")
+
+' Relacionamentos das Interfaces com o Backend
+Rel(web_app, backend_api, "Envia e busca dados gerenciais", "JSON/HTTPS")
+Rel(mobile_app, backend_api, "Sincroniza pesagens e busca dados do tanque", "JSON/HTTPS")
+
+' Relacionamentos do Backend com o Banco e Cache
+Rel(backend_api, database, "Lê e escreve dados de pesagem e tanques usando", "SQL / TCP")
+Rel(backend_api, cache, "Busca fatores de conversão alimentar em", "Protocolo Redis")
+
+' Relacionamentos do Backend com Sistemas Externos
+Rel(backend_api, clima_api, "Consulta temperatura da água estimada via", "JSON/HTTPS")
+Rel(backend_api, notificacoes, "Solicita envio de alertas de subalimentação via", "REST / HTTP")
+
+@enduml
