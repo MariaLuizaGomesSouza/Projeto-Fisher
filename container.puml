@@ -1,20 +1,25 @@
-@startuml container
+@startuml Diagrama_de_Container_Fisher
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
 SHOW_PERSON_OUTLINE()
 
-Person(produtor, "Produtor Rural / Piscicultor", "Usuário responsável por cadastrar tanques, biometrias e consultar a quantidade de ração diária.")
+title Diagrama de Containers - Projeto-Fisher (Estrutura Atual)
 
-System_Boundary(c1, "Sistema de Gestão de Piscicultura - Fisher") {
-    Container(web_app, "Aplicação Web / Frontend", "HTML, CSS, JavaScript", "Interface interativa para registro de amostras de peso, tanques e visualização dos cálculos de ração.")
+' Pessoas / Atores
+Person(produtor, "Produtor Rural / Piscicultor", "Acessa o sistema para registrar tanques, biometrias e consultar a quantidade de ração diária.")
+
+' Limite da Aplicação
+System_Boundary(sistema, "Projeto-Fisher") {
+    Container(frontend, "Interface Web (Templates)", "HTML / CSS / Jinja2", "Páginas visuais renderizadas pelo servidor (base.html, tanques.html, cadastrar_tanque.html) para interação com o usuário.")
     
-    Container(backend, "Servidor Backend", "Python / Flask", "Processa as regras de negócio, calcula a biomassa total, estima a ração diária necessária e gerencia o CRUD.")
+    Container(app_backend, "Aplicação Backend (app.py)", "Python / Flask", "Ponto central do sistema. Gerencia as rotas, renderiza as telas, processa a biomassa e os dados de cadastro de tanques.")
     
-    ContainerDb(database, "Banco de Dados", "SQL (SQLite/PostgreSQL)", "Armazena registros de tanques, lotes de peixes, históriico de biometria (pesagens) e parâmetros de arraçoamento.")
+    ContainerDb(database, "Banco de Dados", "SQLite / PostgreSQL", "Armazena registros de tanques, lotes de peixes, histórico de biometria e parâmetros de arraçoamento.")
 }
 
-Rel(produtor, web_app, "Informa peso amostral, quantidade de peixes e consulta ração", "HTTPS / Navegador")
-Rel(web_app, backend, "Envia dados de biometria e solicita cálculos", "JSON / HTTP REST API")
-Rel(backend, database, "Lê e grava dados de biometria, tanques e ração", "SQL / ORM")
+' Relacionamentos
+Rel(produtor, frontend, "Acessa as páginas e preenche formulários", "Navegador Web / HTTPS")
+Rel(frontend, app_backend, "Envia requisições e dados inseridos", "HTTP / Jinja2")
+Rel(app_backend, database, "Consulta e salva dados dos tanques e pesagens", "SQL / ORM")
 
 @enduml
