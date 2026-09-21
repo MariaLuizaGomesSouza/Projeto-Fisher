@@ -1,13 +1,13 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
-<div class="card">
-    <h2>Tanques Cadastrados</h2>
-    {% if tanques %}
-    <table>
+    <h2>Lista de Tanques</h2>
+    
+    <a href="{{ url_for('cadastrar_tanque') }}" style="display: inline-block; margin-bottom: 15px; padding: 8px 12px; background-color: #004d40; color: white; text-decoration: none; border-radius: 4px;">+ Novo Tanque</a>
+
+    <table border="1" cellpadding="10" style="border-collapse: collapse; width: 100%; background-color: white;">
         <thead>
-            <tr>
-                <th>ID</th>
+            <tr style="background-color: #f2f2f2;">
                 <th>Nome</th>
                 <th>Espécie</th>
                 <th>Quantidade</th>
@@ -17,23 +17,22 @@
         <tbody>
             {% for tanque in tanques %}
             <tr>
-                <td>{{ tanque.id }}</td>
                 <td>{{ tanque.nome }}</td>
                 <td>{{ tanque.especie }}</td>
-                <td>{{ tanque.quantidade }} peixes</td>
+                <td>{{ tanque.quantidade }}</td>
                 <td>
-                    <a href="{{ url_for('editar_tanque', tanque_id=tanque.id) }}" class="btn btn-warning">Editar</a>
-                    
-                    <form action="{{ url_for('deletar_tanque', tanque_id=tanque.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja deletar este tanque?');">
-                        <button type="submit" class="btn btn-danger">Deletar</button>
+                    <a href="{{ url_for('biometria', tanque_id=tanque.id) }}">Biometria / Ração</a> | 
+                    <a href="{{ url_for('editar_tanque', tanque_id=tanque.id) }}">Editar</a> | 
+                    <form action="{{ url_for('deletar_tanque', tanque_id=tanque.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" onclick="return confirm('Tem certeza que deseja apagar este tanque?');" style="background:none; color:red; border:none; cursor:pointer; padding:0;">Deletar</button>
                     </form>
                 </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4" style="text-align: center;">Nenhum tanque cadastrado ainda.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    {% else %}
-    <p style="color: var(--text-muted);">Nenhum tanque cadastrado ainda.</p>
-    {% endif %}
-</div>
 {% endblock %}

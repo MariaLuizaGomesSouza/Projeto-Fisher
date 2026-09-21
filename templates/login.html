@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Projeto Fisher</title>
+</head>
+<body>
+    <h2>Entrar</h2>
+    
+    <!-- Para mostrar mensagens de erro (ex: senha errada) -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul style="color: red;">
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('login') }}">
+        <label>E-mail:</label><br>
+        <input type="email" name="email" required><br><br>
+        
+        <label>Palavra-passe:</label><br>
+        <input type="password" name="senha" required><br><br>
+        
+        <button type="submit">Entrar</button>
+    </form>
+    <br>
+    <a href="{{ url_for('registrar') }}">Criar nova conta</a>
+</body>
+</html>

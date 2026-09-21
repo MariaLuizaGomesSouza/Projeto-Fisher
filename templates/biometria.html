@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Biometria e Ração: {{ tanque.nome }}</h2>
+    <p><strong>Espécie:</strong> {{ tanque.especie }} | <strong>Quantidade:</strong> {{ tanque.quantidade }} peixes</p>
+
+    <!-- Exibição do Cálculo de Ração -->
+    <div style="background-color: #eef; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #cce;">
+        <h3>Sugestão de Trato Diário</h3>
+        <p style="font-size: 1.2em;"><strong>Ração Diária Recomendada:</strong> {{ racao_sugerida }} kg</p>
+        
+        <!-- Alerta de temperatura -->
+        {% if biometrias and biometrias[0].temperatura_agua < 22 %}
+            <p style="color: red; font-weight: bold;">
+                ⚠️ Atenção: Água fria ({{ biometrias[0].temperatura_agua }}°C). O metabolismo dos peixes está lento, a ração foi ajustada automaticamente para evitar desperdício.
+            </p>
+        {% elif biometrias and biometrias[0].temperatura_agua > 32 %}
+            <p style="color: orange; font-weight: bold;">
+                ⚠️ Atenção: Água quente ({{ biometrias[0].temperatura_agua }}°C). Cuidado com os níveis de oxigénio dissolvido.
+            </p>
+        {% endif %}
+    </div>
+
+    <!-- Formulário para registrar nova pesagem -->
+    <div style="background-color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ddd;">
+        <h3>Registrar Nova Pesagem</h3>
+        <form method="POST">
+            <div style="margin-bottom: 15px;">
+                <label>Peso médio atual (em gramas):</label><br>
+                <input type="number" step="0.01" name="peso_medio" required style="padding: 5px; width: 300px;">
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label>Temperatura da água (°C):</label><br>
+                <input type="number" step="0.1" name="temperatura" required style="padding: 5px; width: 300px;">
+            </div>
+
+            <button type="submit" style="padding: 8px 15px; background-color: #004d40; color: white; border: none; cursor: pointer; border-radius: 4px;">Salvar Biometria</button>
+        </form>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid #ddd; margin: 20px 0;">
+
+    <!-- Histórico de Crescimento -->
+    <h3>Histórico de Crescimento</h3>
+    <table border="1" cellpadding="10" style="border-collapse: collapse; width: 100%; background-color: white;">
+        <thead>
+            <tr style="background-color: #f2f2f2;">
+                <th>Data</th>
+                <th>Peso Médio (g)</th>
+                <th>Temperatura (°C)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bio in biometrias %}
+            <tr>
+                <td>{{ bio.data.strftime('%d/%m/%Y') }}</td>
+                <td>{{ bio.peso_medio_gramas }}g</td>
+                <td>{{ bio.temperatura_agua }}°C</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3" style="text-align: center;">Nenhuma biometria registrada ainda para este tanque.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br>
+    <a href="{{ url_for('listar_tanques') }}" style="color: #004d40; font-weight: bold; text-decoration: none;">← Voltar para a Lista de Tanques</a>
+{% endblock %}

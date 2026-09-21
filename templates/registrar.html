@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Registar Produtor</title>
+</head>
+<body>
+    <h2>Criar Conta - Projeto Fisher</h2>
+    <form method="POST">
+        <label>Nome:</label><br>
+        <input type="text" name="nome" required><br><br>
+        
+        <label>E-mail:</label><br>
+        <input type="email" name="email" required><br><br>
+        
+        <label>Palavra-passe:</label><br>
+        <input type="password" name="senha" required><br><br>
+        
+        <button type="submit">Registar</button>
+    </form>
+    <br>
+    <a href="{{ url_for('login') }}">Já tenho uma conta</a>
+</body>
+</html>

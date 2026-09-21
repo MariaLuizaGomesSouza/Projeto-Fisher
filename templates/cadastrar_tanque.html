@@ -1,25 +1,27 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
-<div class="card">
-    <h2>Cadastrar Tanque</h2>
-    <form action="{{ url_for('cadastrar_tanque') }}" method="POST">
-        <div class="form-group">
-            <label for="nome">Nome / Identificação do Tanque</label>
-            <input type="text" id="nome" name="nome" placeholder="Ex: Tanque Escavado 01" required>
+    <h2>Cadastrar Novo Tanque</h2>
+    
+    <form method="POST">
+        <div style="margin-bottom: 15px;">
+            <label>Nome do Tanque:</label><br>
+            <input type="text" name="nome" required style="padding: 5px; width: 300px;">
         </div>
         
-        <div class="form-group">
-            <label for="especie">Espécie dos Peixes</label>
-            <input type="text" id="especie" name="especie" placeholder="Ex: Tilápia do Nilo" required>
+        <div style="margin-bottom: 15px;">
+            <label>Espécie:</label><br>
+            <input type="text" name="especie" required style="padding: 5px; width: 300px;">
         </div>
-
-        <div class="form-group">
-            <label for="quantidade">Quantidade de Peixes</label>
-            <input type="number" id="quantidade" name="quantidade" placeholder="Ex: 1500" required>
+        
+        <div style="margin-bottom: 15px;">
+            <label>Quantidade de Peixes:</label><br>
+            <input type="number" name="quantidade" required style="padding: 5px; width: 300px;">
         </div>
-
-        <button type="submit" class="btn">Salvar Tanque</button>
+        
+        <button type="submit" style="padding: 8px 15px; background-color: #004d40; color: white; border: none; cursor: pointer;">Cadastrar Tanque</button>
     </form>
-</div>
+    
+    <br>
+    <a href="{{ url_for('listar_tanques') }}">Voltar para a Lista</a>
 {% endblock %}
