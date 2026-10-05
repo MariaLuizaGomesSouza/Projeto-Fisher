@@ -1,24 +1,45 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Registar Produtor</title>
-</head>
-<body>
-    <h2>Criar Conta - Projeto Fisher</h2>
-    <form method="POST">
-        <label>Nome:</label><br>
-        <input type="text" name="nome" required><br><br>
-        
-        <label>E-mail:</label><br>
-        <input type="email" name="email" required><br><br>
-        
-        <label>Palavra-passe:</label><br>
-        <input type="password" name="senha" required><br><br>
-        
-        <button type="submit">Registar</button>
-    </form>
-    <br>
-    <a href="{{ url_for('login') }}">Já tenho uma conta</a>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <i class="fa-solid fa-fish-fins"></i>
+            <h2>Criar Conta</h2>
+            <p>Junte-se ao Projeto Fisher</p>
+        </div>
+
+        <form method="POST" class="auth-form">
+            <div class="input-group">
+                <label>Nome Completo</label>
+                <div class="input-wrapper">
+                    <i class="fa-regular fa-user"></i>
+                    <input type="text" name="nome" placeholder="Ex: João Vitor" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>E-mail</label>
+                <div class="input-wrapper">
+                    <i class="fa-regular fa-envelope"></i>
+                    <input type="email" name="email" placeholder="seu@email.com" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Palavra-passe</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" name="senha" placeholder="Crie uma senha forte" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary auth-btn">Registrar Produtor</button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Já tem uma conta? <a href="{{ url_for('login') }}">Fazer login</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

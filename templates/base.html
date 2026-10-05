@@ -1,37 +1,58 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Projeto Fisher - Gestão de Piscicultura</title>
-    
-    <!-- CONEXÃO COM O ARQUIVO CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projeto Fisher</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    <div class="dashboard-container">
+        
+        <!-- Menu Lateral: Só aparece se o usuário estiver logado -->
+        {% if current_user.is_authenticated %}
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-fish-fins"></i>
+                <h2>Fisher PRO</h2>
+            </div>
+            
+            <nav class="menu">
+                <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+                <a href="{{ url_for('listar_tanques') }}"><i class="fa-solid fa-water"></i> Meus Tanques</a>
+                <a href="{{ url_for('cadastrar_tanque') }}"><i class="fa-solid fa-plus"></i> Novo Tanque</a>
+                <a href="{{ url_for('logout') }}"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a>
+            </nav>
+            
+            <div class="user-profile">
+                <!-- Pega a primeira letra do nome do usuário logado -->
+                <div class="avatar">{{ current_user.nome[0] | upper }}</div>
+                <div class="info">
+                    <p>{{ current_user.nome }}</p>
+                    <span>{% if current_user.is_admin %}Administrador{% else %}Produtor{% endif %}</span>
+                </div>
+            </div>
+        </aside>
+        {% endif %}
 
-    <nav>
-        <div>
-            <a href="{{ url_for('index') }}" class="logo">🐟 Projeto Fisher</a>
-        </div>
+        <!-- Conteúdo Principal Dinâmico (onde as outras páginas entram) -->
+        <main class="main-content">
+            <!-- Sistema de Alertas (Ex: Senha incorreta) -->
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                <div style="background-color: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; margin-bottom: 20px;">
+                {% for message in messages %}
+                  <p><strong>Aviso:</strong> {{ message }}</p>
+                {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
 
-        <div>
-            {% if current_user.is_authenticated %}
-                <a href="{{ url_for('listar_tanques') }}">Meus Tanques</a>
-                <a href="{{ url_for('cadastrar_tanque') }}">Cadastrar Tanque</a>
-                <span style="color: #a7ffeb; margin-right: 15px;">| Olá, {{ current_user.nome }}!</span>
-                <a href="{{ url_for('logout') }}" style="color: #ff5252; font-weight: bold;">Sair</a>
-            {% else %}
-                <a href="{{ url_for('login') }}">Entrar</a>
-                <a href="{{ url_for('registrar') }}">Criar Conta</a>
-            {% endif %}
-        </div>
-    </nav>
-
-    <!-- ÁREA VAZIA ONDE AS OUTRAS PÁGINAS SERÃO INJETADAS -->
-    <div class="container">
-        {% block content %}
-        {% endblock %}
+            <!-- O conteúdo das outras páginas será injetado aqui -->
+            {% block content %}{% endblock %}
+        </main>
+        
     </div>
-
 </body>
 </html>
