@@ -1,37 +1,92 @@
 {% extends "base.html" %}
 
-{% block content %}
+{% block auth_content %}
+
 <div class="auth-container">
+
     <div class="auth-card">
+
         <div class="auth-header">
+
             <i class="fa-solid fa-fish-fins"></i>
+
             <h2>Bem-vindo de volta!</h2>
+
             <p>Acesse o painel do Projeto Fisher</p>
+
         </div>
 
-        <form method="POST" action="{{ url_for('login') }}" class="auth-form">
+        <form method="POST"
+              action="{{ url_for('login') }}"
+              class="auth-form">
+
             <div class="input-group">
-                <label>E-mail</label>
+
+                <label for="email">
+                    E-mail
+                </label>
+
                 <div class="input-wrapper">
+
                     <i class="fa-regular fa-envelope"></i>
-                    <input type="email" name="email" placeholder="seu@email.com" required>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="seu@email.com"
+                        required
+                    >
+
                 </div>
+
             </div>
 
             <div class="input-group">
-                <label>Palavra-passe</label>
+
+                <label for="senha">
+                    Senha
+                </label>
+
                 <div class="input-wrapper">
+
                     <i class="fa-solid fa-lock"></i>
-                    <input type="password" name="senha" placeholder="••••••••" required>
+
+                    <input
+                        type="password"
+                        id="senha"
+                        name="senha"
+                        placeholder="••••••••"
+                        required
+                    >
+
                 </div>
+
             </div>
 
-            <button type="submit" class="btn-primary auth-btn">Entrar no Sistema</button>
+            <button
+                type="submit"
+                class="btn-primary auth-btn">
+
+                Entrar no Sistema
+
+            </button>
+
         </form>
 
         <div class="auth-footer">
-            <p>Ainda não tem conta? <a href="{{ url_for('registrar') }}">Criar nova conta</a></p>
+
+            <p>
+                Ainda não tem conta?
+                <a href="{{ url_for('registrar') }}">
+                    Criar nova conta
+                </a>
+            </p>
+
         </div>
+
     </div>
+
 </div>
+
 {% endblock %}

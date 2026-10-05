@@ -4,18 +4,25 @@
 
 <section class="page-section">
 
+
     <div class="page-header">
 
         <h1>
-            Cadastrar Novo Tanque
+            Editar Tanque
         </h1>
+
+        <p>
+            Alterando informações de: <strong>{{ tanque.nome }}</strong>
+        </p>
 
     </div>
 
+
     <form
         method="POST"
-        action="{{ url_for('cadastrar_tanque') }}"
-        class="tank-form">
+        class="tank-form"
+    >
+
 
         <div class="form-group">
 
@@ -24,13 +31,15 @@
             </label>
 
             <input
-                id="nome"
                 type="text"
+                id="nome"
                 name="nome"
+                value="{{ tanque.nome }}"
                 required
             >
 
         </div>
+
 
         <div class="form-group">
 
@@ -39,13 +48,15 @@
             </label>
 
             <input
-                id="especie"
                 type="text"
+                id="especie"
                 name="especie"
+                value="{{ tanque.especie }}"
                 required
             >
 
         </div>
+
 
         <div class="form-group">
 
@@ -54,32 +65,45 @@
             </label>
 
             <input
-                id="quantidade"
                 type="number"
+                id="quantidade"
                 name="quantidade"
                 min="1"
+                value="{{ tanque.quantidade }}"
                 required
             >
 
         </div>
 
-        <button
-            type="submit"
-            class="btn-primary">
 
-            Cadastrar Tanque
+        <div class="form-buttons">
 
-        </button>
+            <button
+                type="submit"
+                class="btn-primary"
+            >
+
+                <i class="fa-solid fa-check"></i>
+
+                Salvar Alterações
+
+            </button>
+
+
+            <a
+                href="{{ url_for('listar_tanques') }}"
+                class="btn-secondary"
+            >
+
+                Cancelar
+
+            </a>
+
+        </div>
+
 
     </form>
 
-    <a
-        href="{{ url_for('listar_tanques') }}"
-        class="back-link">
-
-        Voltar para a Lista
-
-    </a>
 
 </section>
 

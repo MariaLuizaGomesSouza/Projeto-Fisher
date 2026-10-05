@@ -1,45 +1,115 @@
 {% extends "base.html" %}
 
-{% block content %}
+{% block auth_content %}
+
 <div class="auth-container">
+
     <div class="auth-card">
+
         <div class="auth-header">
+
             <i class="fa-solid fa-fish-fins"></i>
+
             <h2>Criar Conta</h2>
+
             <p>Junte-se ao Projeto Fisher</p>
+
         </div>
 
-        <form method="POST" class="auth-form">
+        <form
+            method="POST"
+            action="{{ url_for('registrar') }}"
+            class="auth-form">
+
             <div class="input-group">
-                <label>Nome Completo</label>
+
+                <label for="nome">
+                    Nome Completo
+                </label>
+
                 <div class="input-wrapper">
+
                     <i class="fa-regular fa-user"></i>
-                    <input type="text" name="nome" placeholder="Ex: João Vitor" required>
+
+                    <input
+                        type="text"
+                        id="nome"
+                        name="nome"
+                        placeholder="Ex: João Vitor"
+                        required
+                    >
+
                 </div>
+
             </div>
 
             <div class="input-group">
-                <label>E-mail</label>
+
+                <label for="email">
+                    E-mail
+                </label>
+
                 <div class="input-wrapper">
+
                     <i class="fa-regular fa-envelope"></i>
-                    <input type="email" name="email" placeholder="seu@email.com" required>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="seu@email.com"
+                        required
+                    >
+
                 </div>
+
             </div>
 
             <div class="input-group">
-                <label>Palavra-passe</label>
+
+                <label for="senha">
+                    Senha
+                </label>
+
                 <div class="input-wrapper">
+
                     <i class="fa-solid fa-lock"></i>
-                    <input type="password" name="senha" placeholder="Crie uma senha forte" required>
+
+                    <input
+                        type="password"
+                        id="senha"
+                        name="senha"
+                        placeholder="Crie uma senha forte"
+                        required
+                    >
+
                 </div>
+
             </div>
 
-            <button type="submit" class="btn-primary auth-btn">Registrar Produtor</button>
+            <button
+                type="submit"
+                class="btn-primary auth-btn">
+
+                Registrar Produtor
+
+            </button>
+
         </form>
 
         <div class="auth-footer">
-            <p>Já tem uma conta? <a href="{{ url_for('login') }}">Fazer login</a></p>
+
+            <p>
+                Já tem uma conta?
+                <a href="{{ url_for('login') }}">
+                    Fazer login
+                </a>
+            </p>
+
         </div>
+
     </div>
+
 </div>
+
 {% endblock %}

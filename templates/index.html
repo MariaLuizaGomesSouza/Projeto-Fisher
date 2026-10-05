@@ -1,29 +1,61 @@
 {% extends "base.html" %}
 
 {% block content %}
+
 <header class="topbar">
-    <h1>Visão Geral da Produção</h1>
+
+    <h1>
+        Visão Geral da Produção
+    </h1>
+
 </header>
 
 <section class="stats-grid">
+
     <div class="stat-card">
-        <div class="icon-wrapper blue">
+
+        <div class="icon-wrapper">
             <i class="fa-solid fa-water"></i>
         </div>
+
         <div class="stat-info">
-            <h3>Meus Tanques</h3>
-            <p>{{ total_tanques }}</p>
+
+            <h3>
+                Meus Tanques
+            </h3>
+
+            <p>
+                {{ total_tanques }}
+            </p>
+
         </div>
+
     </div>
-    
+
     <div class="stat-card">
-        <div class="icon-wrapper purple">
+
+        <div class="icon-wrapper">
             <i class="fa-solid fa-user-shield"></i>
         </div>
+
         <div class="stat-info">
-            <h3>Meu Perfil</h3>
-            <p>{% if current_user.is_admin %}Admin{% else %}Produtor{% endif %}</p>
+
+            <h3>
+                Meu Perfil
+            </h3>
+
+            <p>
+                {% if current_user.is_admin %}
+                    Admin
+                {% else %}
+                    Produtor
+                {% endif %}
+            </p>
+
         </div>
+
     </div>
+
 </section>
+
 {% endblock %}
