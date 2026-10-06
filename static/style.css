@@ -108,24 +108,26 @@ body {
    LOGO
    ========================================= */
 
+/* === Área da Logo === */
 .logo {
     display: flex;
     align-items: center;
-
-    min-height: 55px;
-
-    padding: 0 17px 20px;
-
-    border-bottom:
-        1px solid
-        rgba(255, 255, 255, 0.18);
+    gap: 5px; /* Espaço entre a imagem e o texto */
+    margin-bottom: -20px;
 }
 
+.logo-img {
+    width: 100px;
+    height: 90px;
+    object-fit: contain; /* Garante que a logo não fique esticada */
+    display: block;
+}
 
 .logo h2 {
-    color: white;
-    font-size: 20px;
+    font-size: 1.5rem;
     font-weight: 700;
+    color: var(--text-main); /* Ajuste a cor se necessário para contrastar com seu fundo */
+    margin: 0; /* Remove margens indesejadas */
 }
 
 

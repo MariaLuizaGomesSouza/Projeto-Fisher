@@ -693,7 +693,7 @@ def editar_tanque(tanque_id):
 
 
     return render_template(
-        'editar_tanques.html',
+        'editar_tanque.html',
         tanque=tanque
     )
 

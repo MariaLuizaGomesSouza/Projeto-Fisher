@@ -5,13 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Fisher PRO</title>
+    <title>Projeto Fisher</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
 <body>
@@ -27,7 +25,8 @@
         <aside class="sidebar">
 
             <div class="logo">
-                <h2>Fisher PRO</h2>
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo Fisher" class="logo-img">
+                <h2>Fisher</h2>
             </div>
 
             <nav class="menu">
@@ -68,9 +67,9 @@
 
                     <span>
                         {% if current_user.is_admin %}
-                            Administrador
+                        Administrador
                         {% else %}
-                            Produtor
+                        Produtor
                         {% endif %}
                     </span>
 
@@ -88,17 +87,17 @@
 
             {% with messages = get_flashed_messages() %}
 
-                {% if messages %}
+            {% if messages %}
 
-                    <div class="flash-message">
+            <div class="flash-message">
 
-                        {% for message in messages %}
-                            <p>{{ message }}</p>
-                        {% endfor %}
+                {% for message in messages %}
+                <p>{{ message }}</p>
+                {% endfor %}
 
-                    </div>
+            </div>
 
-                {% endif %}
+            {% endif %}
 
             {% endwith %}
 
@@ -111,26 +110,26 @@
 
     {% else %}
 
-        <!-- Páginas sem login -->
+    <!-- Páginas sem login -->
 
-        {% with messages = get_flashed_messages() %}
+    {% with messages = get_flashed_messages() %}
 
-            {% if messages %}
+    {% if messages %}
 
-                <div class="flash-message">
+    <div class="flash-message">
 
-                    {% for message in messages %}
-                        <p>{{ message }}</p>
-                    {% endfor %}
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
 
-                </div>
+    </div>
 
-            {% endif %}
+    {% endif %}
 
-        {% endwith %}
+    {% endwith %}
 
-        {% block auth_content %}
-        {% endblock %}
+    {% block auth_content %}
+    {% endblock %}
 
     {% endif %}
 
