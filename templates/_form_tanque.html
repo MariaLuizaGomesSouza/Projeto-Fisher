@@ -5,6 +5,7 @@
 <div class="form-layout">
 
     <form method="POST" class="painel tank-form" id="form-tanque">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
         <div class="form-grid">
 
@@ -61,7 +62,7 @@
                 {{ 'Salvar alterações' if tanque else 'Cadastrar tanque' }}
             </button>
 
-            <a href="{{ url_for('listar_tanques') }}" class="btn btn-secondary">Cancelar</a>
+            <a href="{{ url_for('tanques.listar_tanques') }}" class="btn btn-secondary">Cancelar</a>
 
         </div>
 
@@ -122,4 +123,4 @@
 
 </div>
 
-<script id="perfis-json" type="application/json">{{ PERFIS_JSON|tojson }}</script>
+<script id="perfis-json" type="application/json">{{ (PERFIS_JSON | default({}, true)) | tojson }}</script>

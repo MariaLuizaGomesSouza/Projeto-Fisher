@@ -13,9 +13,9 @@
 </header>
 
 <nav class="chips" aria-label="Filtrar por tipo">
-    <a href="{{ url_for('historico') }}" class="chip{{ ' ativo' if not tipo }}">Tudo</a>
+    <a href="{{ url_for('tanques.historico') }}" class="chip{{ ' ativo' if not tipo }}">Tudo</a>
     {% for chave, rotulo in ROTULOS_ATIVIDADE.items() %}
-    <a href="{{ url_for('historico', tipo=chave) }}" class="chip{{ ' ativo' if tipo == chave }}">{{ rotulo }}</a>
+    <a href="{{ url_for('tanques.historico', tipo=chave) }}" class="chip{{ ' ativo' if tipo == chave }}">{{ rotulo }}</a>
     {% endfor %}
 </nav>
 

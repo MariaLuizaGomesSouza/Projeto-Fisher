@@ -14,19 +14,21 @@
 
 <section class="estoque-topo">
 
-    <div class="painel nv-{{ estoque.nivel }}">
+    <div class="painel nv-{{ estoque.nivel if estoque and estoque.nivel else 'info' }}">
 
         <div class="estoque-nivel">
 
-            {{ m.gauge(estoque.percentual, estoque.nivel, rotulo='do depósito', pequeno=True) }}
+            {{ m.gauge(estoque.percentual if estoque else 0, estoque.nivel if estoque else 'info', rotulo='do depósito', pequeno=True) }}
 
             <div class="estoque-info">
                 <h2>Nível de ração</h2>
-                <div class="grande">{{ estoque.kg|br(1) }} kg</div>
-                <p>de {{ estoque.capacidade|br(0) }} kg de capacidade.</p>
+                <div class="grande">
+                    {{ (estoque.quantidade_kg if estoque and estoque.quantidade_kg is not none else 0)|br(1) }} kg
+                </div>
+                <p>de {{ (estoque.capacidade if estoque and estoque.capacidade else 0)|br(0) }} kg de capacidade.</p>
                 <p>
-                    {% if estoque.dias is not none %}
-                    No ritmo atual ({{ estoque.consumo_diario|br(1) }} kg por dia) dura cerca de
+                    {% if estoque and estoque.dias is defined and estoque.dias is not none %}
+                    No ritmo atual ({{ (estoque.consumo_diario if estoque.consumo_diario else 0)|br(1) }} kg por dia) dura cerca de
                     <b>{{ estoque.dias|br(0) }} dia(s)</b>.
                     {% else %}
                     Registre biometrias para estimar quantos dias a ração dura.
@@ -41,6 +43,7 @@
     <div class="painel acoes-estoque">
 
         <form method="POST" class="acao-estoque">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="acao" value="repor">
             <label for="repor">Chegou ração? Adicione ao estoque (kg)</label>
             <div class="linha">
@@ -50,21 +53,21 @@
         </form>
 
         <form method="POST" class="acao-estoque">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="acao" value="ajustar">
             <label for="ajustar">Conferiu o depósito? Corrija o total (kg)</label>
             <div class="linha">
-                <input id="ajustar" name="valor" type="text" inputmode="decimal"
-                       placeholder="{{ estoque.kg }}" required>
+                <input id="ajustar" name="valor" type="text" inputmode="decimal" placeholder="{{ estoque.quantidade_kg if estoque else 0 }}" required>
                 <button class="btn btn-secondary" type="submit">Ajustar</button>
             </div>
         </form>
 
         <form method="POST" class="acao-estoque">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="acao" value="capacidade">
             <label for="capacidade">Capacidade do depósito (kg)</label>
             <div class="linha">
-                <input id="capacidade" name="valor" type="text" inputmode="decimal"
-                       placeholder="{{ estoque.capacidade }}" required>
+                <input id="capacidade" name="valor" type="text" inputmode="decimal" placeholder="{{ estoque.capacidade if estoque and estoque.capacidade else 0 }}" required>
                 <button class="btn btn-secondary" type="submit">Salvar</button>
             </div>
         </form>
@@ -88,10 +91,12 @@
 
         {% for item in por_tanque %}
         <div class="consumo-linha">
-            <a href="{{ url_for('biometria', tanque_id=item.tanque.id) }}" style="font-weight: 700; text-decoration: none;">
+            <a href="{{ url_for('tanques.biometria', tanque_id=item.tanque.id) }}"
+                style="font-weight: 700; text-decoration: none;">
                 {{ item.tanque.nome }}
             </a>
-            <div class="barra nv-info"><i style="--p: {{ (item.kg / total * 100)|round|int if total else 0 }}"></i></div>
+            <div class="barra nv-info"><i style="--p: {{ (item.kg / total * 100)|round|int if total else 0 }}"></i>
+            </div>
             <b>{{ item.kg|br(2) }} kg</b>
         </div>
         {% endfor %}

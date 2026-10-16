@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block titulo %}Painel Admin | Fisher{% endblock %}
+
+{% block content %}
+<header class="page-head">
+    <div>
+        <h1>Gestão de Utilizadores</h1>
+        <p>Ações administrativas e controlo de permissões do sistema.</p>
+    </div>
+</header>
+
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>E-mail</th>
+                <th>Nível de Acesso</th>
+                <th class="num">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in usuarios %}
+            <tr>
+                <td>{{ u.id }}</td>
+                <td><b>{{ u.nome }}</b></td>
+                <td>{{ u.email }}</td>
+                <td>
+                    {% if u.is_admin %}
+                    <span class="pill nv-otimo">Administrador</span>
+                    {% else %}
+                    <span class="pill nv-info">Produtor</span>
+                    {% endif %}
+                </td>
+                <td class="num">
+                    {% if u.id != current_user.id %}
+                    <form action="{{ url_for('auth.alternar_admin', user_id=u.id) }}" method="POST" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-secondary">
+                            {{ 'Rebaixar' if u.is_admin else 'Tornar Admin' }}
+                        </button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

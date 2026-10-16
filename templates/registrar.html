@@ -31,7 +31,8 @@
                 <p>Junte-se ao Projeto Fisher.</p>
             </div>
 
-            <form method="POST" action="{{ url_for('registrar') }}">
+            <form method="POST" action="{{ url_for('auth.registrar') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                 <div class="input-group">
                     <label for="nome">Nome completo</label>
@@ -66,7 +67,7 @@
 
             <div class="auth-footer">
                 Já tem uma conta?
-                <a href="{{ url_for('login') }}">Entrar</a>
+                <a href="{{ url_for('auth.login') }}">Entrar</a>
             </div>
 
         </div>

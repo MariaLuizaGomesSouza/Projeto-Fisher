@@ -13,6 +13,14 @@
     var reduzirMovimento = window.matchMedia &&
         window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+    // Função para obter o Token CSRF da Meta Tag ou Input
+    function getCsrfToken() {
+        var meta = $('meta[name="csrf-token"]');
+        if (meta) return meta.content;
+        var input = $('input[name="csrf_token"]');
+        return input ? input.value : '';
+    }
+
     function formatar(valor, casas) {
         return Number(valor).toLocaleString('pt-BR', {
             minimumFractionDigits: casas,
@@ -87,6 +95,33 @@
         var dlgTrato = $('#dlg-trato');
         var dlgExcluir = $('#dlg-excluir');
 
+        // Configura a submissão via FETCH DELETE para a janela de exclusão
+        var formExcluir = $('#form-excluir');
+        if (formExcluir && !formExcluir.dataset.bound) {
+            formExcluir.dataset.bound = 'true';
+            formExcluir.addEventListener('submit', function (evt) {
+                evt.preventDefault();
+                
+                fetch(formExcluir.action, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': getCsrfToken(),
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(function (r) {
+                    if (r.ok) {
+                        window.location.reload();
+                    } else {
+                        alert('Erro ao excluir o item.');
+                    }
+                })
+                .catch(function () {
+                    alert('Erro de conexão com o servidor.');
+                });
+            });
+        }
+
         document.addEventListener('click', function (e) {
 
             var fechar = e.target.closest('[data-fechar]');
@@ -110,7 +145,9 @@
 
             var excluir = e.target.closest('[data-excluir]');
             if (excluir && dlgExcluir) {
-                $('#form-excluir').action = excluir.getAttribute('data-acao');
+                if (formExcluir) {
+                    formExcluir.action = excluir.getAttribute('data-acao');
+                }
                 $('#excluir-titulo').textContent = excluir.getAttribute('data-titulo') || 'Excluir?';
                 $('#excluir-texto').textContent = excluir.getAttribute('data-texto') || '';
                 $('#excluir-botao').textContent = excluir.getAttribute('data-botao') || 'Excluir';
@@ -124,7 +161,20 @@
         var falta = paraNumero(botao.getAttribute('data-falta')) || 0;
         var refeicao = paraNumero(botao.getAttribute('data-refeicao')) || 0;
 
-        $('#form-trato').action = botao.getAttribute('data-acao');
+        var formTrato = $('#form-trato');
+        if (formTrato) {
+            formTrato.action = botao.getAttribute('data-acao');
+            
+            // Injeta o Token CSRF se não existir
+            if (!formTrato.querySelector('input[name="csrf_token"]')) {
+                var inputCsrf = document.createElement('input');
+                inputCsrf.type = 'hidden';
+                inputCsrf.name = 'csrf_token';
+                inputCsrf.value = getCsrfToken();
+                formTrato.appendChild(inputCsrf);
+            }
+        }
+
         $('#trato-tanque').textContent = 'Tanque: ' + botao.getAttribute('data-nome');
 
         $('#trato-resumo').innerHTML =
@@ -180,32 +230,34 @@
         }
 
         function filtrar() {
-            var termo = normalizar(busca.value.trim());
+            var termo = normalizar(busca ? busca.value.trim() : '');
             var visiveis = 0;
 
             linhas.forEach(function (tr) {
                 var texto = normalizar(tr.dataset.nome + ' ' + tr.dataset.especie);
                 var ok =
                     (!termo || texto.indexOf(termo) !== -1) &&
-                    (!especie.value || tr.dataset.especie === especie.value) &&
-                    (!nivel.value || tr.dataset.nivel === nivel.value);
+                    (!especie || !especie.value || tr.dataset.especie === especie.value) &&
+                    (!nivel || !nivel.value || tr.dataset.nivel === nivel.value);
 
                 tr.hidden = !ok;
                 if (ok) visiveis++;
             });
 
-            semResultado.hidden = visiveis !== 0;
-            contagem.textContent = 'Mostrando ' + visiveis + ' de ' + linhas.length;
+            if (semResultado) semResultado.hidden = visiveis !== 0;
+            if (contagem) contagem.textContent = 'Mostrando ' + visiveis + ' de ' + linhas.length;
         }
 
         [busca, especie, nivel].forEach(function (el) {
-            el.addEventListener('input', filtrar);
-            el.addEventListener('change', filtrar);
+            if (el) {
+                el.addEventListener('input', filtrar);
+                el.addEventListener('change', filtrar);
+            }
         });
 
         // Ordenar clicando no título da coluna
 
-        $$('th[data-ordenar]', tabela).forEach(function (th, indice) {
+        $$('th[data-ordenar]', tabela).forEach(function (th) {
             th.tabIndex = 0;
 
             function ordenar() {
@@ -292,15 +344,18 @@
                 $('#perfil-prot').textContent = p.proteina_min + '% a ' + p.proteina_max + '% PB';
             }
 
-            var qtd = paraNumero(campoQtd.value);
-            var vol = paraNumero(campoVol.value);
-            $('#perfil-dens').textContent = (qtd > 0 && vol > 0)
-                ? formatar(qtd / vol, 1) + ' peixes por m³'
-                : 'Informe o volume para calcular';
+            var qtd = campoQtd ? paraNumero(campoQtd.value) : null;
+            var vol = campoVol ? paraNumero(campoVol.value) : null;
+            var densEl = $('#perfil-dens');
+            if (densEl) {
+                densEl.textContent = (qtd > 0 && vol > 0)
+                    ? formatar(qtd / vol, 1) + ' peixes por m³'
+                    : 'Informe o volume para calcular';
+            }
         }
 
         [campoEspecie, campoQtd, campoVol].forEach(function (el) {
-            el.addEventListener('input', atualizar);
+            if (el) el.addEventListener('input', atualizar);
         });
 
         atualizar();
@@ -356,10 +411,11 @@
             espera = setTimeout(simular, 250);
         }
 
-        peso.addEventListener('input', agendar);
-        temp.addEventListener('input', agendar);
-
-        simular();
+        if (peso && temp) {
+            peso.addEventListener('input', agendar);
+            temp.addEventListener('input', agendar);
+            simular();
+        }
     }
 
 
@@ -471,7 +527,6 @@
         desenhar();
 
         // Redesenha se a janela mudar de tamanho
-
         var espera = null;
         window.addEventListener('resize', function () {
             clearTimeout(espera);

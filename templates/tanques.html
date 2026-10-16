@@ -1,206 +1,72 @@
 {% extends "base.html" %}
-{% import '_macros.html' as m with context %}
 
-{% block titulo %}Meus tanques | Fisher{% endblock %}
+{% block titulo %}Meus Tanques | Fisher{% endblock %}
 
 {% block content %}
-
 <header class="page-head">
-
     <div>
-        <h1>Meus tanques</h1>
-        <p>Busque, filtre e gerencie todos os tanques em um só lugar.</p>
+        <h1>Gerenciamento de Tanques</h1>
+        <p>Visualize, edite ou gerencie os seus tanques ativos.</p>
     </div>
-
-    <div class="head-acoes">
-        {% if itens %}
-        <a href="{{ url_for('exportar_tanques') }}" class="btn btn-secondary">
-            <i class="fa-solid fa-file-csv"></i> Exportar planilha
-        </a>
-        {% endif %}
-        <a href="{{ url_for('cadastrar_tanque') }}" class="btn btn-primary">
-            <i class="fa-solid fa-plus"></i> Novo tanque
-        </a>
-    </div>
-
+    <a href="{{ url_for('tanques.cadastrar_tanque') }}" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i> Novo Tanque
+    </a>
 </header>
 
-
-{% if not itens %}
-
-<section class="painel vazio">
-    <strong>Nenhum tanque cadastrado ainda</strong>
-    Cadastre o primeiro para começar a acompanhar biometria, ração e bem-estar.
-    <p style="margin-top: 18px;">
-        <a href="{{ url_for('cadastrar_tanque') }}" class="btn btn-primary">
-            <i class="fa-solid fa-plus"></i> Cadastrar tanque
-        </a>
-    </p>
-</section>
-
-{% else %}
-
-<section class="resumo-tabela" aria-label="Resumo">
-    <div><span>Tanques</span><strong>{{ resumo.total }}</strong></div>
-    <div><span>Peixes</span><strong>{{ resumo.peixes|br(0) }}</strong></div>
-    <div><span>Biomassa estimada</span><strong>{{ resumo.biomassa|br(1) }} kg</strong></div>
-    <div>
-        <span>Bem-estar médio</span>
-        <strong>{{ resumo.media ~ '%' if resumo.media is not none else '--' }}</strong>
-    </div>
-    <div>
-        <span>Pedem atenção</span>
-        <strong>{{ resumo.atencao }}</strong>
-    </div>
-</section>
-
-
-<div class="barra-filtros">
-
-    <div class="busca">
-        <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="search" id="filtro-busca" placeholder="Buscar por nome ou espécie"
-               aria-label="Buscar tanques" autocomplete="off">
-    </div>
-
-    <select id="filtro-especie" class="filtro-select" aria-label="Filtrar por espécie">
-        <option value="">Todas as espécies</option>
-        {% for e in especies %}
-        <option value="{{ e|lower }}">{{ e }}</option>
-        {% endfor %}
-    </select>
-
-    <select id="filtro-nivel" class="filtro-select" aria-label="Filtrar por situação">
-        <option value="">Qualquer situação</option>
-        <option value="otimo">Ótimo</option>
-        <option value="bom">Bom</option>
-        <option value="atencao">Atenção</option>
-        <option value="critico">Crítico</option>
-        <option value="vazio">Sem dados</option>
-    </select>
-
-    <span class="filtro-contagem" id="filtro-contagem" aria-live="polite"></span>
-
-</div>
-
-
-<div class="table-container">
-
-    <table id="tabela-tanques">
-
-        <thead>
-            <tr>
-                <th data-ordenar="texto">Tanque</th>
-                <th data-ordenar="texto" class="hide-sm">Espécie</th>
-                <th data-ordenar="numero" class="num">Peixes</th>
-                <th data-ordenar="numero" class="num hide-sm">Biomassa</th>
-                <th data-ordenar="numero" class="num hide-sm">Ração por dia</th>
-                <th data-ordenar="numero" class="hide-sm">Temperatura</th>
-                <th data-ordenar="numero">Bem-estar</th>
-                <th class="num">Ações</th>
-            </tr>
-        </thead>
-
-        <tbody>
-
-            {% for item in itens %}
-            {% set t = item.tanque %}
-            {% set av = item.av %}
-
-            <tr data-nome="{{ t.nome|lower }}"
-                data-especie="{{ t.especie|lower }}"
-                data-nivel="{{ av.nivel }}">
-
-                <td class="celula-nome" data-valor="{{ t.nome|lower }}">
-                    <a href="{{ url_for('biometria', tanque_id=t.id) }}">{{ t.nome }}</a>
-                    {% if t.volume_m3 %}
-                    <small>{{ t.volume_m3|br(1) }} m³, {{ (t.quantidade / t.volume_m3)|br(1) }} peixes/m³</small>
-                    {% elif t.observacoes %}
-                    <small>{{ t.observacoes }}</small>
-                    {% endif %}
-                </td>
-
-                <td class="hide-sm" data-valor="{{ t.especie|lower }}">{{ t.especie }}</td>
-
-                <td class="num" data-valor="{{ t.quantidade }}">{{ t.quantidade|br(0) }}</td>
-
-                <td class="num hide-sm" data-valor="{{ av.calc.biomassa_kg if av.calc else -1 }}">
-                    {{ (av.calc.biomassa_kg|br(1) ~ ' kg') if av.calc else '-' }}
-                </td>
-
-                <td class="num hide-sm" data-valor="{{ av.calc.total_kg if av.calc else -1 }}">
-                    {{ (av.calc.total_kg|br(2) ~ ' kg') if av.calc else '-' }}
-                </td>
-
-                <td class="hide-sm" data-valor="{{ av.temperatura.valor if av.temperatura else -1 }}">
-                    {% if av.temperatura %}
-                    <span class="pill nv-{{ av.temperatura.chave }}" title="{{ av.temperatura.rotulo }}">
-                        {{ av.temperatura.valor|br(1) }} °C
-                    </span>
-                    {% else %}-{% endif %}
-                </td>
-
-                <td data-valor="{{ av.score if av.score is not none else -1 }}">
-                    {% if av.score is not none %}
-                    <div class="celula-bem-estar nv-{{ av.nivel }}" title="{{ av.rotulo }}">
-                        <div class="barra"><i style="--p: {{ av.score }}"></i></div>
-                        <b>{{ av.score }}%</b>
-                    </div>
-                    {% else %}
-                    <span class="pill nv-vazio">Sem dados</span>
-                    {% endif %}
-                </td>
-
-                <td>
-                    <div class="acoes">
-
-                        {{ m.botao_trato(t, av, icone_so=True) }}
-
-                        <a href="{{ url_for('biometria', tanque_id=t.id) }}"
-                           class="btn-icone" title="Biometria e detalhes"
-                           aria-label="Abrir {{ t.nome }}">
-                            <i class="fa-solid fa-scale-balanced"></i>
+<section class="table-section" style="margin-top: 2rem;">
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Espécie</th>
+                    <th>Quantidade</th>
+                    <th>Volume</th>
+                    <th style="text-align: right;">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in tanques %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for('tanques.biometria', tanque_id=t.id) }}" style="font-weight: 600; text-decoration: none;">
+                            {{ t.nome }}
+                        </a>
+                    </td>
+                    <td>{{ t.especie }}</td>
+                    <td>{{ t.quantidade|br(0) }} peixes</td>
+                    <td>{{ t.volume_m3|br(1) if t.volume_m3 else '--' }} m³</td>
+                    
+                    <!-- BOTÕES DE AÇÃO RÁPIDA DIRETOS NA LISTAGEM -->
+                    <td style="text-align: right; white-space: nowrap;">
+                        <!-- Botão de Aceder/Biometria -->
+                        <a href="{{ url_for('tanques.biometria', tanque_id=t.id) }}" class="btn btn-sm btn-secondary" title="Ver Manejo">
+                            <i class="fa-solid fa-chart-line"></i>
                         </a>
 
-                        <a href="{{ url_for('editar_tanque', tanque_id=t.id) }}"
-                           class="btn-icone" title="Editar"
-                           aria-label="Editar {{ t.nome }}">
+                        <!-- Botão de Editar Direto -->
+                        <a href="{{ url_for('tanques.editar_tanque', tanque_id=t.id) }}" class="btn btn-sm" style="background-color: #ffc107; color: #000;" title="Editar Tanque">
                             <i class="fa-solid fa-pen"></i>
                         </a>
 
-                        <form action="{{ url_for('duplicar_tanque', tanque_id=t.id) }}" method="POST">
-                            <button type="submit" class="btn-icone" title="Duplicar"
-                                    aria-label="Duplicar {{ t.nome }}">
-                                <i class="fa-solid fa-copy"></i>
+                        <!-- Botão de Excluir Direto com Confirmação -->
+                        <form action="{{ url_for('tanques.excluir_tanque', tanque_id=t.id) }}" method="POST" style="display: inline-block; margin-left: 4px;" onsubmit="return confirm('Tem certeza que deseja excluir o tanque {{ t.nome }}? Todo o histórico será apagado!');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm" style="background-color: #dc3545; color: white; border: none;" title="Excluir Tanque">
+                                <i class="fa-solid fa-trash"></i>
                             </button>
                         </form>
-
-                        <button type="button" class="btn-icone perigo" title="Excluir"
-                                aria-label="Excluir {{ t.nome }}"
-                                data-excluir
-                                data-acao="{{ url_for('deletar_tanque', tanque_id=t.id) }}"
-                                data-titulo="Excluir o tanque {{ t.nome }}?"
-                                data-texto="As biometrias e os tratos deste tanque também serão apagados. Essa ação não pode ser desfeita."
-                                data-botao="Excluir tanque">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-
-                    </div>
-                </td>
-
-            </tr>
-            {% endfor %}
-
-            <tr id="linha-sem-resultado" hidden>
-                <td colspan="8" class="empty-message">Nenhum tanque encontrado com esses filtros.</td>
-            </tr>
-
-        </tbody>
-
-    </table>
-
-</div>
-
-{% endif %}
-
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 3rem;">
+                        Nenhum tanque cadastrado ainda. Clique em "Novo Tanque" acima para começar.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
 {% endblock %}

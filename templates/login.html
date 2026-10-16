@@ -1,29 +1,8 @@
 {% extends "base.html" %}
 
-{% block titulo %}Entrar | Fisher{% endblock %}
-
 {% block auth_content %}
-
 <div class="auth-container">
-
-    <section class="auth-marca">
-
-        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo Fisher" class="logo-grande">
-
-        <h1>Ração certa, peixe saudável.</h1>
-
-        <p>Acompanhe biometria, temperatura e tratos de cada tanque em um só lugar.</p>
-
-        <ul class="auth-vantagens">
-            <li><i class="fa-solid fa-bowl-food"></i> Ração calculada por espécie, peso e temperatura</li>
-            <li><i class="fa-solid fa-droplet"></i> Nota de bem-estar de cada tanque</li>
-            <li><i class="fa-solid fa-boxes-stacked"></i> Controle do estoque de ração</li>
-        </ul>
-
-    </section>
-
     <section class="auth-lado">
-
         <div class="auth-card">
 
             <div class="auth-header">
@@ -31,8 +10,9 @@
                 <p>Entre para acessar o painel do Projeto Fisher.</p>
             </div>
 
-            <form method="POST" action="{{ url_for('login') }}">
-
+            <form method="POST" action="{{ url_for('auth.login') }}" class="auth-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                
                 <div class="input-group">
                     <label for="email">E-mail</label>
                     <div class="input-wrapper">
@@ -57,13 +37,10 @@
 
             <div class="auth-footer">
                 Ainda não tem conta?
-                <a href="{{ url_for('registrar') }}">Criar nova conta</a>
+                <a href="{{ url_for('auth.registrar') }}">Criar nova conta</a>
             </div>
 
         </div>
-
     </section>
-
 </div>
-
 {% endblock %}

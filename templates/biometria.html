@@ -8,7 +8,7 @@
 {% set calc = av.calc %}
 {% set ali = av.alimentacao %}
 
-<a href="{{ url_for('listar_tanques') }}" class="voltar">
+<a href="{{ url_for('tanques.listar_tanques') }}" class="voltar">
     <i class="fa-solid fa-arrow-left"></i> Meus tanques
 </a>
 
@@ -50,7 +50,7 @@
 
         {{ m.botao_trato(tanque, av) }}
 
-        <a href="{{ url_for('editar_tanque', tanque_id=tanque.id) }}" class="btn btn-secondary">
+        <a href="{{ url_for('tanques.editar_tanque', tanque_id=tanque.id) }}" class="btn btn-secondary">
             <i class="fa-solid fa-pen"></i> Editar tanque
         </a>
 
@@ -242,7 +242,7 @@
 </section>
 
 
-{% set alertas_tanque = av.alertas|rejectattr('0', 'equalto', 'info')|list %}
+{% set alertas_tanque = av.alertas|rejectattr('0', 'equalto', 'info')|list if av.alertas else [] %}
 
 {% if alertas_tanque %}
 <section class="alertas" style="margin-bottom: 22px;">
@@ -256,7 +256,7 @@
 {% endif %}
 
 
-<!-- ===== NOVA BIOMETRIA + OCORRÊNCIAS ===== -->
+<!-- ===== NOVA BIOMETRIA + HISTÓRICO ===== -->
 
 <section class="grade-form-linha">
 
@@ -267,265 +267,60 @@
         </div>
 
         <p class="sub" style="margin-bottom: 16px;">
-            Pese uma amostra de peixes e informe o peso médio. Veja a ração mudar enquanto digita.
+            Pese uma amostra de peixes e informe o peso médio.
         </p>
 
-        <form method="POST" class="tank-form" id="form-biometria"
-              data-simular="{{ url_for('api_simular', tanque_id=tanque.id) }}">
-
-            <div class="form-grid">
-
-                <div class="form-group">
-                    <label for="peso_medio">Peso médio atual (g)</label>
-                    <input id="peso_medio" type="text" inputmode="decimal" name="peso_medio" required
-                           autocomplete="off" placeholder="Ex.: 180"
-                           value="{{ ultima.peso_medio_gramas if ultima else '' }}">
-                </div>
-
-                <div class="form-group">
-                    <label for="temperatura">Temperatura da água (°C)</label>
-                    <input id="temperatura" type="text" inputmode="decimal" name="temperatura" required
-                           autocomplete="off" placeholder="Ex.: 28"
-                           value="{{ ultima.temperatura_agua if ultima else '' }}">
-                </div>
-
-            </div>
-
-            <div class="simulador" id="simulador" aria-live="polite">
-                <small>Preencha o peso e a temperatura para simular a ração.</small>
-            </div>
-
-            <div class="form-buttons">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fa-solid fa-check"></i> Salvar biometria
-                </button>
-            </div>
-
-        </form>
-
-    </div>
-
-
-    <div class="painel">
-
-        <div class="painel-titulo">
-            <h2>Estoque e ocorrências</h2>
-        </div>
-
-        <div class="medidor-estoque nv-{{ estoque.nivel }}" style="margin-bottom: 20px;">
-            <div class="criterio-topo">
-                <span>Ração no depósito</span>
-                <b style="color: var(--nv);">{{ estoque.percentual }}%</b>
-            </div>
-            <div class="barra"><i style="--p: {{ estoque.percentual }}"></i></div>
-            <p class="dica">
-                {{ estoque.kg|br(0) }} kg{% if estoque.dias is not none %}, o bastante para cerca de {{ estoque.dias|br(0) }} dia(s) neste tanque{% endif %}.
-                <a href="{{ url_for('estoque') }}" style="color: var(--terracota); font-weight: 700;">Gerenciar estoque</a>
-            </p>
-        </div>
-
-        <form method="POST" action="{{ url_for('registrar_mortalidade', tanque_id=tanque.id) }}" class="mini-form">
+        <!-- FORMULÁRIO COMPLETO AQUI -->
+        <form action="{{ url_for('tanques.biometria', tanque_id=tanque.id) }}" method="POST" class="tank-form" id="form-biometria">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
             <div class="form-group">
-                <label for="perdas">Registrar peixes perdidos</label>
-                <input id="perdas" name="perdas" type="number" min="1" max="{{ tanque.quantidade }}"
-                       step="1" required placeholder="Quantidade">
+                <label for="peso_medio">Peso Médio (g)</label>
+                <input type="number" step="0.1" min="0.1" id="peso_medio" name="peso_medio" class="form-control" placeholder="Ex: 250" required>
             </div>
 
-            <button type="submit" class="btn btn-secondary">Registrar baixa</button>
+            <div class="form-group">
+                <label for="temperatura">Temperatura da Água (°C)</label>
+                <input type="number" step="0.1" id="temperatura" name="temperatura" class="form-control" placeholder="Ex: 27.5" required>
+            </div>
 
+            <div style="margin-top: 1rem;">
+                <button type="submit" class="btn btn-primary">Registrar Biometria</button>
+            </div>
         </form>
 
-        <p class="dica">A quantidade de peixes é atualizada e a ração é recalculada.</p>
-
     </div>
 
-</section>
-
-
-<!-- ===== GRÁFICOS ===== -->
-
-<section class="grade-form-linha">
-
+    <!-- TABELA DE HISTÓRICO DE BIOMETRIAS -->
     <div class="painel">
-
         <div class="painel-titulo">
-            <h2>Crescimento e temperatura</h2>
+            <h2>Histórico de Biometrias</h2>
         </div>
 
-        {% if crescimento %}
-        <div class="crescimento">
-            <div><span>Ganho de peso</span><b>{{ crescimento.ganho_g|br(1) }} g</b></div>
-            <div><span>Ganho por dia</span><b>{{ crescimento.gpd|br(2) }} g</b></div>
-            <div><span>Período</span><b>{{ crescimento.dias }} dia(s)</b></div>
-            <div><span>Crescimento</span><b>{{ crescimento.percentual|br(0) }}%</b></div>
-        </div>
-        {% endif %}
-
-        {% if serie|length >= 2 %}
-
-        <svg class="grafico" id="grafico-peso" role="img"
-             aria-label="Gráfico do peso médio ao longo do tempo"></svg>
-
-        <div class="grafico-legenda">
-            <span><i style="background: var(--agua);"></i>Peso médio (g)</span>
-        </div>
-
-        <svg class="grafico" id="grafico-temp" role="img" style="margin-top: 18px;"
-             aria-label="Gráfico da temperatura da água ao longo do tempo"></svg>
-
-        <div class="grafico-legenda">
-            <span><i style="background: var(--coral);"></i>Temperatura (°C)</span>
-            <span><i style="background: #2E8A68; opacity: .4;"></i>Faixa ideal da espécie</span>
-        </div>
-
-        <script id="serie-json" type="application/json">{{ {'serie': serie, 'ideal': perfil.temp_ideal}|tojson }}</script>
-
-        {% else %}
-
-        <div class="vazio">
-            <strong>O gráfico aparece com 2 biometrias</strong>
-            Registre uma nova pesagem nas próximas semanas para acompanhar o crescimento.
-        </div>
-
-        {% endif %}
-
-    </div>
-
-    <div class="painel">
-
-        <div class="painel-titulo">
-            <h2>Ração nos últimos 7 dias</h2>
-            <span class="sub">{{ semana.total_dado|br(1) }} kg no total</span>
-        </div>
-
-        {{ m.grafico_semana(semana) }}
-
-    </div>
-
-</section>
-
-
-<!-- ===== HISTÓRICOS ===== -->
-
-<section class="grade-form-linha">
-
-    <div class="painel">
-
-        <div class="painel-titulo">
-            <h2>Histórico de biometrias</h2>
-            <span class="sub">{{ biometrias|length }} registro(s)</span>
-        </div>
-
-        {% if biometrias %}
-
-        <div class="table-container" style="border: 0; border-radius: 0;">
-            <table>
+        <div class="table-container">
+            <table class="table">
                 <thead>
                     <tr>
                         <th>Data</th>
-                        <th class="num">Peso médio</th>
-                        <th class="num">Temperatura</th>
-                        <th class="num"><span class="so-leitor">Ações</span></th>
+                        <th>Peso Médio</th>
+                        <th>Temperatura</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for bio in biometrias[:15] %}
+                    {% for b in biometrias %}
                     <tr>
-                        <td>{{ bio.data|data_br }}</td>
-                        <td class="num">{{ bio.peso_medio_gramas|br(1) }} g</td>
-                        <td class="num">{{ bio.temperatura_agua|br(1) }} °C</td>
-                        <td class="num">
-                            <button type="button" class="btn-icone perigo" title="Remover biometria"
-                                    aria-label="Remover biometria de {{ bio.data|data_br }}"
-                                    data-excluir
-                                    data-acao="{{ url_for('excluir_biometria', tanque_id=tanque.id, bio_id=bio.id) }}"
-                                    data-titulo="Remover esta biometria?"
-                                    data-texto="A biometria de {{ bio.data|data_br }} ({{ bio.peso_medio_gramas|br(1) }} g) será apagada e a ração será recalculada."
-                                    data-botao="Remover">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
-                        </td>
+                        <td>{{ b.data|data_hora_br }}</td>
+                        <td>{{ b.peso_medio_gramas|br(1) }} g</td>
+                        <td>{{ b.temperatura_agua|br(1) }} °C</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" style="text-align: center; padding: 2rem;">Nenhuma biometria registrada.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-
-        {% if biometrias|length > 15 %}
-        <p class="sub" style="margin-top: 12px;">Mostrando as 15 mais recentes.</p>
-        {% endif %}
-
-        {% else %}
-
-        <div class="vazio">
-            <strong>Nenhuma biometria registrada ainda</strong>
-            Use o formulário acima para registrar a primeira.
-        </div>
-
-        {% endif %}
-
-    </div>
-
-
-    <div class="coluna">
-
-        <div class="painel">
-
-            <div class="painel-titulo">
-                <h2>Últimos tratos</h2>
-            </div>
-
-            {% if tratos %}
-
-            {% for t in tratos[:6] %}
-            <div class="dados-linha">
-                <span>
-                    <b>{{ t.quantidade_kg|br(2) }} kg</b>
-                    <small>{{ t.data|data_hora_br }}</small>
-                </span>
-                <span class="direita">
-                    <button type="button" class="btn-icone perigo" title="Desfazer trato"
-                            aria-label="Desfazer trato de {{ t.quantidade_kg|br(2) }} kg"
-                            data-excluir
-                            data-acao="{{ url_for('excluir_trato', tanque_id=tanque.id, trato_id=t.id) }}"
-                            data-titulo="Desfazer este trato?"
-                            data-texto="Os {{ t.quantidade_kg|br(2) }} kg voltam para o estoque e o trato sai do histórico."
-                            data-botao="Desfazer">
-                        <i class="fa-solid fa-rotate-left"></i>
-                    </button>
-                </span>
-            </div>
-            {% endfor %}
-
-            {% else %}
-
-            <div class="vazio">
-                <strong>Nenhum trato registrado</strong>
-                Use o botão "Dar ração" para anotar cada trato.
-            </div>
-
-            {% endif %}
-
-        </div>
-
-        {% if atividades %}
-        <div class="painel">
-
-            <div class="painel-titulo">
-                <h2>Alterações neste tanque</h2>
-                <a href="{{ url_for('historico') }}">Ver tudo</a>
-            </div>
-
-            <ul class="linha-tempo">
-                {% for a in atividades %}
-                {{ m.evento(a) }}
-                {% endfor %}
-            </ul>
-
-        </div>
-        {% endif %}
-
     </div>
 
 </section>

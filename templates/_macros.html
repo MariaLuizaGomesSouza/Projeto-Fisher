@@ -82,7 +82,7 @@
         {{ a.descricao }}
 
         {% if a.link_ok %}
-        <a href="{{ url_for('biometria', tanque_id=a.tanque_id) }}">Abrir tanque</a>
+        <a href="{{ url_for('tanques.biometria', tanque_id=a.tanque_id) }}">Abrir tanque</a>
         {% endif %}
 
         <small>
@@ -103,7 +103,7 @@
 <button type="button"
         class="{{ 'btn-icone agua' if icone_so else 'btn btn-sm btn-agua' }}"
         data-trato
-        data-acao="{{ url_for('registrar_trato', tanque_id=tanque.id) }}"
+        data-acao="{{ url_for('tanques.registrar_trato', tanque_id=tanque.id) }}"
         data-nome="{{ tanque.nome }}"
         data-meta="{{ av.calc.total_kg }}"
         data-falta="{{ av.alimentacao.falta_kg }}"
