@@ -1,91 +1,68 @@
 {% extends "base.html" %}
 
+{% block titulo %}Entrar | Fisher{% endblock %}
+
 {% block auth_content %}
 
 <div class="auth-container">
 
-    <div class="auth-card">
+    <section class="auth-marca">
 
-        <div class="auth-header">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo Fisher" class="logo-grande">
 
-            <i class="fa-solid fa-fish-fins"></i>
+        <h1>Ração certa, peixe saudável.</h1>
 
-            <h2>Bem-vindo de volta!</h2>
+        <p>Acompanhe biometria, temperatura e tratos de cada tanque em um só lugar.</p>
 
-            <p>Acesse o painel do Projeto Fisher</p>
+        <ul class="auth-vantagens">
+            <li><i class="fa-solid fa-bowl-food"></i> Ração calculada por espécie, peso e temperatura</li>
+            <li><i class="fa-solid fa-droplet"></i> Nota de bem-estar de cada tanque</li>
+            <li><i class="fa-solid fa-boxes-stacked"></i> Controle do estoque de ração</li>
+        </ul>
 
-        </div>
+    </section>
 
-        <form method="POST"
-              action="{{ url_for('login') }}"
-              class="auth-form">
+    <section class="auth-lado">
 
-            <div class="input-group">
+        <div class="auth-card">
 
-                <label for="email">
-                    E-mail
-                </label>
-
-                <div class="input-wrapper">
-
-                    <i class="fa-regular fa-envelope"></i>
-
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder="seu@email.com"
-                        required
-                    >
-
-                </div>
-
+            <div class="auth-header">
+                <h2>Bem-vindo de volta</h2>
+                <p>Entre para acessar o painel do Projeto Fisher.</p>
             </div>
 
-            <div class="input-group">
+            <form method="POST" action="{{ url_for('login') }}">
 
-                <label for="senha">
-                    Senha
-                </label>
-
-                <div class="input-wrapper">
-
-                    <i class="fa-solid fa-lock"></i>
-
-                    <input
-                        type="password"
-                        id="senha"
-                        name="senha"
-                        placeholder="••••••••"
-                        required
-                    >
-
+                <div class="input-group">
+                    <label for="email">E-mail</label>
+                    <div class="input-wrapper">
+                        <i class="fa-regular fa-envelope"></i>
+                        <input type="email" id="email" name="email" placeholder="seu@email.com"
+                               autocomplete="email" required>
+                    </div>
                 </div>
 
-            </div>
+                <div class="input-group">
+                    <label for="senha">Senha</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="senha" name="senha" placeholder="Sua senha"
+                               autocomplete="current-password" required>
+                    </div>
+                </div>
 
-            <button
-                type="submit"
-                class="btn-primary auth-btn">
+                <button type="submit" class="btn btn-primary auth-btn">Entrar no sistema</button>
 
-                Entrar no Sistema
+            </form>
 
-            </button>
-
-        </form>
-
-        <div class="auth-footer">
-
-            <p>
+            <div class="auth-footer">
                 Ainda não tem conta?
-                <a href="{{ url_for('registrar') }}">
-                    Criar nova conta
-                </a>
-            </p>
+                <a href="{{ url_for('registrar') }}">Criar nova conta</a>
+            </div>
 
         </div>
 
-    </div>
+    </section>
 
 </div>
 

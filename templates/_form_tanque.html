@@ -1,0 +1,125 @@
+{# Formulário compartilhado entre "Novo tanque" e "Editar tanque" #}
+
+{% set dados = form if form else {} %}
+
+<div class="form-layout">
+
+    <form method="POST" class="painel tank-form" id="form-tanque">
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label for="nome">Nome do tanque</label>
+                <input id="nome" type="text" name="nome" maxlength="100" required
+                       placeholder="Ex.: Tanque 01"
+                       value="{{ dados.get('nome', tanque.nome if tanque else '') }}">
+            </div>
+
+            <div class="form-group">
+                <label for="especie">Espécie</label>
+                <input id="especie" type="text" name="especie" maxlength="100" required
+                       list="lista-especies" autocomplete="off"
+                       placeholder="Ex.: Tambaqui"
+                       value="{{ dados.get('especie', tanque.especie if tanque else '') }}">
+                <datalist id="lista-especies">
+                    <option value="Tambaqui">
+                    <option value="Tilápia">
+                    <option value="Pacu">
+                    <option value="Pintado">
+                    <option value="Surubim">
+                    <option value="Carpa">
+                </datalist>
+            </div>
+
+            <div class="form-group">
+                <label for="quantidade">Quantidade de peixes</label>
+                <input id="quantidade" type="number" name="quantidade" min="1" step="1" required
+                       placeholder="Ex.: 1000"
+                       value="{{ dados.get('quantidade', tanque.quantidade if tanque else '') }}">
+            </div>
+
+            <div class="form-group">
+                <label for="volume_m3">Volume do tanque <small>(m³, opcional)</small></label>
+                <input id="volume_m3" type="text" inputmode="decimal" name="volume_m3"
+                       placeholder="Ex.: 250"
+                       value="{{ dados.get('volume_m3', tanque.volume_m3 if tanque and tanque.volume_m3 else '') }}">
+                <p class="dica">Com o volume, mostramos a densidade de peixes por m³.</p>
+            </div>
+
+            <div class="form-group largo">
+                <label for="observacoes">Observações <small>(opcional)</small></label>
+                <textarea id="observacoes" name="observacoes" maxlength="500"
+                          placeholder="Ex.: Lote comprado em março, ração de 4 mm">{{ dados.get('observacoes', tanque.observacoes if tanque and tanque.observacoes else '') }}</textarea>
+            </div>
+
+        </div>
+
+        <div class="form-buttons">
+
+            <button type="submit" class="btn btn-primary">
+                <i class="fa-solid fa-check"></i>
+                {{ 'Salvar alterações' if tanque else 'Cadastrar tanque' }}
+            </button>
+
+            <a href="{{ url_for('listar_tanques') }}" class="btn btn-secondary">Cancelar</a>
+
+        </div>
+
+    </form>
+
+
+    <!-- REFERÊNCIA DA ESPÉCIE (atualiza enquanto digita) -->
+
+    <aside class="painel perfil-card" id="perfil-card" aria-live="polite">
+
+        <h2 id="perfil-nome">Referência da espécie</h2>
+
+        <p class="sub" id="perfil-sub">
+            Digite a espécie para ver a faixa de temperatura e a taxa de ração usadas no cálculo.
+        </p>
+
+        <ul class="perfil-lista">
+
+            <li>
+                <i class="fa-solid fa-temperature-half"></i>
+                <div>
+                    <b id="perfil-temp">-</b>
+                    <span>Temperatura ideal da água</span>
+                </div>
+            </li>
+
+            <li>
+                <i class="fa-solid fa-bowl-food"></i>
+                <div>
+                    <b id="perfil-taxa">-</b>
+                    <span>Ração por dia, em % do peso dos peixes</span>
+                </div>
+            </li>
+
+            <li>
+                <i class="fa-solid fa-dna"></i>
+                <div>
+                    <b id="perfil-prot">-</b>
+                    <span>Proteína bruta recomendada na ração</span>
+                </div>
+            </li>
+
+            <li>
+                <i class="fa-solid fa-cube"></i>
+                <div>
+                    <b id="perfil-dens">-</b>
+                    <span>Densidade de estocagem</span>
+                </div>
+            </li>
+
+        </ul>
+
+        <p class="perfil-aviso">
+            São referências gerais de manejo. Ajuste conforme a orientação do seu técnico.
+        </p>
+
+    </aside>
+
+</div>
+
+<script id="perfis-json" type="application/json">{{ PERFIS_JSON|tojson }}</script>

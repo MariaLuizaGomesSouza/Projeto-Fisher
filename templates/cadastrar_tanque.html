@@ -1,86 +1,21 @@
 {% extends "base.html" %}
 
+{% block titulo %}Novo tanque | Fisher{% endblock %}
+
 {% block content %}
 
-<section class="page-section">
+<a href="{{ url_for('listar_tanques') }}" class="voltar">
+    <i class="fa-solid fa-arrow-left"></i> Meus tanques
+</a>
 
-    <div class="page-header">
-
-        <h1>
-            Cadastrar Novo Tanque
-        </h1>
-
+<header class="page-head">
+    <div>
+        <h1>Cadastrar novo tanque</h1>
+        <p>Depois de salvar, você já pode registrar a primeira biometria.</p>
     </div>
+</header>
 
-    <form
-        method="POST"
-        action="{{ url_for('cadastrar_tanque') }}"
-        class="tank-form">
-
-        <div class="form-group">
-
-            <label for="nome">
-                Nome do Tanque:
-            </label>
-
-            <input
-                id="nome"
-                type="text"
-                name="nome"
-                required
-            >
-
-        </div>
-
-        <div class="form-group">
-
-            <label for="especie">
-                Espécie:
-            </label>
-
-            <input
-                id="especie"
-                type="text"
-                name="especie"
-                required
-            >
-
-        </div>
-
-        <div class="form-group">
-
-            <label for="quantidade">
-                Quantidade de Peixes:
-            </label>
-
-            <input
-                id="quantidade"
-                type="number"
-                name="quantidade"
-                min="1"
-                required
-            >
-
-        </div>
-
-        <button
-            type="submit"
-            class="btn-primary">
-
-            Cadastrar Tanque
-
-        </button>
-
-    </form>
-
-    <a
-        href="{{ url_for('listar_tanques') }}"
-        class="back-link">
-
-        Voltar para a Lista
-
-    </a>
-
-</section>
+{% set tanque = none %}
+{% include '_form_tanque.html' %}
 
 {% endblock %}

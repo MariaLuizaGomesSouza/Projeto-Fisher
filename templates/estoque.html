@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% import '_macros.html' as m with context %}
+
+{% block titulo %}Ração e estoque | Fisher{% endblock %}
+
+{% block content %}
+
+<header class="page-head">
+    <div>
+        <h1>Ração e estoque</h1>
+        <p>Controle o que há no depósito e quanto os peixes precisam por dia.</p>
+    </div>
+</header>
+
+<section class="estoque-topo">
+
+    <div class="painel nv-{{ estoque.nivel }}">
+
+        <div class="estoque-nivel">
+
+            {{ m.gauge(estoque.percentual, estoque.nivel, rotulo='do depósito', pequeno=True) }}
+
+            <div class="estoque-info">
+                <h2>Nível de ração</h2>
+                <div class="grande">{{ estoque.kg|br(1) }} kg</div>
+                <p>de {{ estoque.capacidade|br(0) }} kg de capacidade.</p>
+                <p>
+                    {% if estoque.dias is not none %}
+                    No ritmo atual ({{ estoque.consumo_diario|br(1) }} kg por dia) dura cerca de
+                    <b>{{ estoque.dias|br(0) }} dia(s)</b>.
+                    {% else %}
+                    Registre biometrias para estimar quantos dias a ração dura.
+                    {% endif %}
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="painel acoes-estoque">
+
+        <form method="POST" class="acao-estoque">
+            <input type="hidden" name="acao" value="repor">
+            <label for="repor">Chegou ração? Adicione ao estoque (kg)</label>
+            <div class="linha">
+                <input id="repor" name="valor" type="text" inputmode="decimal" placeholder="Ex.: 200" required>
+                <button class="btn btn-primary" type="submit">Repor</button>
+            </div>
+        </form>
+
+        <form method="POST" class="acao-estoque">
+            <input type="hidden" name="acao" value="ajustar">
+            <label for="ajustar">Conferiu o depósito? Corrija o total (kg)</label>
+            <div class="linha">
+                <input id="ajustar" name="valor" type="text" inputmode="decimal"
+                       placeholder="{{ estoque.kg }}" required>
+                <button class="btn btn-secondary" type="submit">Ajustar</button>
+            </div>
+        </form>
+
+        <form method="POST" class="acao-estoque">
+            <input type="hidden" name="acao" value="capacidade">
+            <label for="capacidade">Capacidade do depósito (kg)</label>
+            <div class="linha">
+                <input id="capacidade" name="valor" type="text" inputmode="decimal"
+                       placeholder="{{ estoque.capacidade }}" required>
+                <button class="btn btn-secondary" type="submit">Salvar</button>
+            </div>
+        </form>
+
+    </div>
+
+</section>
+
+<div class="grade-form-linha">
+
+    <section class="painel">
+
+        <div class="painel-titulo">
+            <h2>Consumo diário recomendado</h2>
+            <span class="sub">por tanque</span>
+        </div>
+
+        {% if por_tanque %}
+
+        {% set total = por_tanque|sum(attribute='kg') %}
+
+        {% for item in por_tanque %}
+        <div class="consumo-linha">
+            <a href="{{ url_for('biometria', tanque_id=item.tanque.id) }}" style="font-weight: 700; text-decoration: none;">
+                {{ item.tanque.nome }}
+            </a>
+            <div class="barra nv-info"><i style="--p: {{ (item.kg / total * 100)|round|int if total else 0 }}"></i></div>
+            <b>{{ item.kg|br(2) }} kg</b>
+        </div>
+        {% endfor %}
+
+        {% else %}
+
+        <div class="vazio">
+            <strong>Sem dados de consumo</strong>
+            O consumo aparece depois da primeira biometria de um tanque.
+        </div>
+
+        {% endif %}
+
+    </section>
+
+    <section class="painel">
+
+        <div class="painel-titulo">
+            <h2>Movimentações do estoque</h2>
+        </div>
+
+        {% if movimentos %}
+        <ul class="linha-tempo">
+            {% for a in movimentos %}
+            {{ m.evento(a) }}
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="vazio">
+            <strong>Nenhuma movimentação ainda</strong>
+            Reposições e ajustes aparecem aqui. Cada trato registrado desconta do estoque.
+        </div>
+        {% endif %}
+
+    </section>
+
+</div>
+
+{% endblock %}

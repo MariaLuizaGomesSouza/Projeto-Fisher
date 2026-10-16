@@ -5,16 +5,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Projeto Fisher</title>
+    <title>{% block titulo %}Projeto Fisher{% endblock %}</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:wght@400;500;600;700&display=swap">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v=2) }}">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <script src="{{ url_for('static', filename='app.js', v=2) }}" defer></script>
 </head>
 
 <body>
 
+    <!-- MENSAGENS (somem sozinhas) -->
+
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+    {% if mensagens %}
+    <div class="toasts" role="status" aria-live="polite">
+        {% for categoria, texto in mensagens %}
+        {% set cat = categoria if categoria in ['sucesso', 'erro', 'info'] else 'info' %}
+        <div class="toast nv-{{ {'sucesso': 'otimo', 'erro': 'critico', 'info': 'info'}[cat] }}">
+            <i class="fa-solid {{ {'sucesso': 'fa-circle-check', 'erro': 'fa-circle-exclamation', 'info': 'fa-circle-info'}[cat] }}"></i>
+            <p>{{ texto }}</p>
+            <button type="button" data-fechar-toast aria-label="Fechar mensagem">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+
     {% if current_user.is_authenticated %}
+
+    {% set ep = request.endpoint %}
 
     <div class="dashboard-container">
 
@@ -29,31 +58,49 @@
                 <h2>Fisher</h2>
             </div>
 
-            <nav class="menu">
+            <nav class="menu" aria-label="Menu principal">
 
-                <a href="{{ url_for('dashboard') }}">
-                    <i class="fa-solid fa-chart-line"></i>
-                    <span>Dashboard</span>
+                <a href="{{ url_for('dashboard') }}"
+                   class="{{ 'ativo' if ep == 'dashboard' }}"
+                   {% if ep == 'dashboard' %}aria-current="page"{% endif %}>
+                    <i class="fa-solid fa-gauge-high"></i>
+                    <span>Painel</span>
                 </a>
 
-                <a href="{{ url_for('listar_tanques') }}">
+                <a href="{{ url_for('listar_tanques') }}"
+                   class="{{ 'ativo' if ep in ['listar_tanques', 'biometria', 'editar_tanque'] }}"
+                   {% if ep in ['listar_tanques', 'biometria', 'editar_tanque'] %}aria-current="page"{% endif %}>
                     <i class="fa-solid fa-water"></i>
-                    <span>Meus Tanques</span>
+                    <span>Meus tanques</span>
                 </a>
 
-                <a href="{{ url_for('cadastrar_tanque') }}">
+                <a href="{{ url_for('cadastrar_tanque') }}"
+                   class="{{ 'ativo' if ep == 'cadastrar_tanque' }}"
+                   {% if ep == 'cadastrar_tanque' %}aria-current="page"{% endif %}>
                     <i class="fa-solid fa-plus"></i>
-                    <span>Novo Tanque</span>
+                    <span>Novo tanque</span>
                 </a>
 
-                <a href="{{ url_for('logout') }}">
+                <a href="{{ url_for('estoque') }}"
+                   class="{{ 'ativo' if ep == 'estoque' }}"
+                   {% if ep == 'estoque' %}aria-current="page"{% endif %}>
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                    <span>Ração e estoque</span>
+                </a>
+
+                <a href="{{ url_for('historico') }}"
+                   class="{{ 'ativo' if ep == 'historico' }}"
+                   {% if ep == 'historico' %}aria-current="page"{% endif %}>
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>Histórico</span>
+                </a>
+
+                <a href="{{ url_for('logout') }}" class="menu-sair">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
                     <span>Sair</span>
                 </a>
 
             </nav>
-
-            <!-- USUÁRIO -->
 
             <div class="user-profile">
 
@@ -62,17 +109,8 @@
                 </div>
 
                 <div class="info">
-
                     <p>{{ current_user.nome }}</p>
-
-                    <span>
-                        {% if current_user.is_admin %}
-                        Administrador
-                        {% else %}
-                        Produtor
-                        {% endif %}
-                    </span>
-
+                    <span>{{ 'Administrador' if current_user.is_admin else 'Produtor' }}</span>
                 </div>
 
             </div>
@@ -84,52 +122,18 @@
         =============================== -->
 
         <main class="main-content">
-
-            {% with messages = get_flashed_messages() %}
-
-            {% if messages %}
-
-            <div class="flash-message">
-
-                {% for message in messages %}
-                <p>{{ message }}</p>
-                {% endfor %}
-
+            <div class="conteudo">
+                {% block content %}{% endblock %}
             </div>
-
-            {% endif %}
-
-            {% endwith %}
-
-            {% block content %}
-            {% endblock %}
-
         </main>
 
     </div>
 
+    {% include '_modais.html' %}
+
     {% else %}
 
-    <!-- Páginas sem login -->
-
-    {% with messages = get_flashed_messages() %}
-
-    {% if messages %}
-
-    <div class="flash-message">
-
-        {% for message in messages %}
-        <p>{{ message }}</p>
-        {% endfor %}
-
-    </div>
-
-    {% endif %}
-
-    {% endwith %}
-
-    {% block auth_content %}
-    {% endblock %}
+    {% block auth_content %}{% endblock %}
 
     {% endif %}
 

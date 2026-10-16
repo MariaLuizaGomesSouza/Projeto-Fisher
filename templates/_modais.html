@@ -1,0 +1,53 @@
+{# Janelas usadas em várias páginas (abertas pelo app.js) #}
+
+<!-- REGISTRAR RAÇÃO -->
+
+<dialog id="dlg-trato" aria-labelledby="trato-titulo">
+    <form method="POST" id="form-trato">
+
+        <input type="hidden" name="next" value="{{ request.full_path.rstrip('?') }}">
+
+        <div class="dialogo-corpo">
+
+            <h2 id="trato-titulo">Registrar ração</h2>
+
+            <p id="trato-tanque"></p>
+
+            <div class="dialogo-resumo" id="trato-resumo"></div>
+
+            <div class="form-group">
+                <label for="trato-qtd">Quantidade fornecida (kg)</label>
+                <input id="trato-qtd" name="quantidade" type="text"
+                       inputmode="decimal" autocomplete="off" required>
+            </div>
+
+            <div class="atalhos" id="trato-atalhos"></div>
+
+        </div>
+
+        <div class="dialogo-rodape">
+            <button type="button" class="btn btn-secondary" data-fechar>Cancelar</button>
+            <button type="submit" class="btn btn-primary">Registrar trato</button>
+        </div>
+
+    </form>
+</dialog>
+
+
+<!-- CONFIRMAR EXCLUSÃO -->
+
+<dialog id="dlg-excluir" aria-labelledby="excluir-titulo">
+    <form method="POST" id="form-excluir">
+
+        <div class="dialogo-corpo">
+            <h2 id="excluir-titulo">Excluir?</h2>
+            <p id="excluir-texto"></p>
+        </div>
+
+        <div class="dialogo-rodape">
+            <button type="button" class="btn btn-secondary" data-fechar>Cancelar</button>
+            <button type="submit" class="btn btn-perigo" id="excluir-botao">Excluir</button>
+        </div>
+
+    </form>
+</dialog>

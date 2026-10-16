@@ -1,110 +1,20 @@
 {% extends "base.html" %}
 
+{% block titulo %}Editar {{ tanque.nome }} | Fisher{% endblock %}
+
 {% block content %}
 
-<section class="page-section">
+<a href="{{ url_for('listar_tanques') }}" class="voltar">
+    <i class="fa-solid fa-arrow-left"></i> Meus tanques
+</a>
 
-
-    <div class="page-header">
-
-        <h1>
-            Editar Tanque
-        </h1>
-
-        <p>
-            Alterando informações de: <strong>{{ tanque.nome }}</strong>
-        </p>
-
+<header class="page-head">
+    <div>
+        <h1>Editar tanque</h1>
+        <p>Alterando as informações de <strong>{{ tanque.nome }}</strong>.</p>
     </div>
+</header>
 
-
-    <form
-        method="POST"
-        class="tank-form"
-    >
-
-
-        <div class="form-group">
-
-            <label for="nome">
-                Nome do Tanque:
-            </label>
-
-            <input
-                type="text"
-                id="nome"
-                name="nome"
-                value="{{ tanque.nome }}"
-                required
-            >
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label for="especie">
-                Espécie:
-            </label>
-
-            <input
-                type="text"
-                id="especie"
-                name="especie"
-                value="{{ tanque.especie }}"
-                required
-            >
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label for="quantidade">
-                Quantidade de Peixes:
-            </label>
-
-            <input
-                type="number"
-                id="quantidade"
-                name="quantidade"
-                min="1"
-                value="{{ tanque.quantidade }}"
-                required
-            >
-
-        </div>
-
-
-        <div class="form-buttons">
-
-            <button
-                type="submit"
-                class="btn-primary"
-            >
-
-                <i class="fa-solid fa-check"></i>
-
-                Salvar Alterações
-
-            </button>
-
-
-            <a
-                href="{{ url_for('listar_tanques') }}"
-                class="btn-secondary"
-            >
-
-                Cancelar
-
-            </a>
-
-        </div>
-
-
-    </form>
-
-
-</section>
+{% include '_form_tanque.html' %}
 
 {% endblock %}
