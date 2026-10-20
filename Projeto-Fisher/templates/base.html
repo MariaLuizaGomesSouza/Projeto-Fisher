@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>{% block titulo %}Projeto Fisher{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.png') }}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:wght@400;500;600;700&display=swap">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v=4) }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <script src="{{ url_for('static', filename='app.js', v=3) }}" defer></script>
+</head>
+
+<body>
+
+    <!-- MENSAGENS (somem sozinhas) -->
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+    {% if mensagens %}
+    <div class="toasts" role="status" aria-live="polite">
+        {% for categoria, texto in mensagens %}
+        {% set cat = categoria if categoria in ['sucesso', 'erro', 'info', 'warning', 'danger'] else 'info' %}
+        {% set classe_nv = 'otimo' if cat == 'sucesso' else ('critico' if cat in ['erro', 'danger'] else 'info') %}
+        {% set icone = 'fa-circle-check' if cat == 'sucesso' else ('fa-circle-exclamation' if cat in ['erro', 'danger']
+        else 'fa-circle-info') %}
+
+        <div class="toast nv-{{ classe_nv }}">
+            <i class="fa-solid {{ icone }}"></i>
+            <p>{{ texto }}</p>
+            <button type="button" data-fechar-toast aria-label="Fechar mensagem">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+
+    {% if current_user.is_authenticated %}
+
+    {% set ep = request.endpoint %}
+
+    <div class="dashboard-container">
+
+        <!-- ==============================
+             MENU LATERAL
+        =============================== -->
+
+        <aside class="sidebar">
+
+            <div class="logo">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Fisher Pro" class="logo-img">
+            </div>
+
+            <nav class="menu" aria-label="Menu principal">
+
+                <a href="{{ url_for('dashboard') }}" class="{{ 'ativo' if ep == 'dashboard' }}" {% if ep=='dashboard'
+                    %}aria-current="page" {% endif %}>
+                    <i class="fa-solid fa-gauge-high"></i>
+                    <span>Painel</span>
+                </a>
+
+                <a href="{{ url_for('tanques.listar_tanques') }}"
+                    class="{{ 'ativo' if ep in ['tanques.listar_tanques', 'tanques.biometria', 'tanques.editar_tanque', 'listar_tanques', 'biometria', 'editar_tanque'] }}"
+                    {% if ep in ['tanques.listar_tanques', 'tanques.biometria' , 'tanques.editar_tanque'
+                    , 'listar_tanques' , 'biometria' , 'editar_tanque' ] %}aria-current="page" {% endif %}>
+                    <i class="fa-solid fa-water"></i>
+                    <span>Meus tanques</span>
+                </a>
+
+                <a href="{{ url_for('tanques.cadastrar_tanque') }}"
+                    class="{{ 'ativo' if ep in ['tanques.cadastrar_tanque', 'cadastrar_tanque'] }}" {% if ep in
+                    ['tanques.cadastrar_tanque', 'cadastrar_tanque' ] %}aria-current="page" {% endif %}>
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Novo tanque</span>
+                </a>
+
+                <a href="{{ url_for('tanques.estoque') }}" class="{{ 'ativo' if ep in ['tanques.estoque', 'estoque'] }}"
+                    {% if ep in ['tanques.estoque', 'estoque' ] %}aria-current="page" {% endif %}>
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                    <span>Ração e estoque</span>
+                </a>
+
+                <a href="{{ url_for('tanques.historico') }}"
+                    class="{{ 'ativo' if ep in ['tanques.historico', 'historico'] }}" {% if ep in
+                    ['tanques.historico', 'historico' ] %}aria-current="page" {% endif %}>
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>Histórico</span>
+                </a>
+
+                {% if current_user.is_admin %}
+                <a href="{{ url_for('auth.listar_usuarios') }}" class="{{ 'ativo' if ep == 'auth.listar_usuarios' }}" {%
+                    if ep=='auth.listar_usuarios' %}aria-current="page" {% endif %}>
+                    <i class="fa-solid fa-user-shield"></i>
+                    <span>Painel Admin</span>
+                </a>
+                {% endif %}
+
+                <a href="{{ url_for('auth.logout') }}" class="menu-sair">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Sair</span>
+                </a>
+
+            </nav>
+
+            <div class="user-profile">
+
+                <div class="avatar">
+                    {{ current_user.nome[0] | upper }}
+                </div>
+
+                <div class="info">
+                    <p>{{ current_user.nome }}</p>
+                    <span>{{ 'Administrador' if current_user.is_admin else 'Produtor' }}</span>
+                </div>
+
+            </div>
+
+        </aside>
+
+        <!-- ==============================
+             CONTEÚDO
+        =============================== -->
+
+        <main class="main-content">
+            <div class="conteudo">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+
+    </div>
+
+    {% include '_modais.html' %}
+
+    {% else %}
+
+    {% block auth_content %}{% endblock %}
+
+    {% endif %}
+
+</body>
+
+</html>

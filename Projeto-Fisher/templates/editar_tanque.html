@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block titulo %}Editar {{ tanque.nome }} | Fisher{% endblock %}
+
+{% block content %}
+
+<a href="{{ url_for('tanques.listar_tanques') }}" class="voltar">
+    <i class="fa-solid fa-arrow-left"></i> Meus tanques
+</a>
+
+<header class="page-head">
+    <div>
+        <h1>Editar tanque</h1>
+        <p>Alterando as informações de <strong>{{ tanque.nome }}</strong>.</p>
+    </div>
+</header>
+
+{% include '_form_tanque.html' %}
+
+{% endblock %}

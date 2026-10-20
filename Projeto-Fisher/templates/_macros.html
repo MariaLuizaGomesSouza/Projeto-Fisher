@@ -1,0 +1,131 @@
+{# =========================================================
+   COMPONENTES REUTILIZÁVEIS
+   Importe com:  {% import '_macros.html' as m with context %}
+   ========================================================= #}
+
+
+{# Medidor de água: quanto mais cheio, melhor o bem-estar #}
+
+{% macro gauge(valor, nivel, rotulo='', pequeno=False) %}
+<div class="gauge nv-{{ nivel }}{{ ' gauge-p' if pequeno }}"
+     style="--v: {{ valor if valor is not none else 0 }}"
+     role="img"
+     aria-label="{{ 'Bem-estar ' ~ valor ~ '%' if valor is not none else 'Sem dados de bem-estar' }}">
+
+    <div class="gauge-agua" aria-hidden="true">
+        <div class="gauge-corpo"></div>
+        <svg class="onda onda-2" viewBox="0 0 200 14" preserveAspectRatio="none">
+            <path d="M0 7 Q25 0 50 7 T100 7 T150 7 T200 7 V14 H0Z"/>
+        </svg>
+        <svg class="onda onda-1" viewBox="0 0 200 14" preserveAspectRatio="none">
+            <path d="M0 7 Q25 14 50 7 T100 7 T150 7 T200 7 V14 H0Z"/>
+        </svg>
+    </div>
+
+    <div class="gauge-num">
+        {% if valor is none %}
+        <strong>--</strong>
+        <span>Sem dados</span>
+        {% else %}
+        <strong><span data-contar="{{ valor }}">{{ valor }}</span><sup>%</sup></strong>
+        <span>{{ rotulo }}</span>
+        {% endif %}
+    </div>
+
+</div>
+{% endmacro %}
+
+
+{# Gráfico de barras dos últimos 7 dias #}
+
+{% macro grafico_semana(semana) %}
+<div class="semana-plot">
+
+    {% if semana.meta_kg %}
+    <div class="semana-meta" style="--m: {{ semana.meta_altura }}">
+        <span>Meta {{ semana.meta_kg|br(1) }} kg</span>
+    </div>
+    {% endif %}
+
+    <div class="semana-colunas">
+        {% for d in semana.dias %}
+        <div class="semana-col{{ ' hoje' if d.hoje }}"
+             title="{{ d.data }}: {{ d.dado|br(2) }} kg fornecidos">
+            <div class="semana-barra" style="--h: {{ d.altura }}">
+                {% if d.dado %}<span class="kg">{{ d.dado|br(1) }}</span>{% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<div class="semana-rotulos semana-colunas">
+    {% for d in semana.dias %}
+    <small class="{{ 'hoje' if d.hoje }}">{{ 'hoje' if d.hoje else d.rotulo }}</small>
+    {% endfor %}
+</div>
+{% endmacro %}
+
+
+{# Item da linha do tempo de atividades #}
+
+{% macro evento(a, mostrar_autor=False) %}
+<li class="tp-{{ a.tipo }}">
+
+    <span class="evento-icone">
+        <i class="fa-solid {{ ICONES_ATIVIDADE.get(a.tipo, 'fa-circle') }}"></i>
+    </span>
+
+    <div class="evento-texto">
+
+        {{ a.descricao }}
+
+        {% if a.link_ok %}
+        <a href="{{ url_for('tanques.biometria', tanque_id=a.tanque_id) }}">Abrir tanque</a>
+        {% endif %}
+
+        <small>
+            {{ a.criado_em|quando }}
+            {% if mostrar_autor and a.autor %}por {{ a.autor }}{% endif %}
+        </small>
+
+    </div>
+
+</li>
+{% endmacro %}
+
+
+{# Botão que abre a janela "Registrar ração" #}
+
+{% macro botao_trato(tanque, av, icone_so=False) %}
+{% if av.calc %}
+<button type="button"
+        class="{{ 'btn-icone agua' if icone_so else 'btn btn-sm btn-agua' }}"
+        data-trato
+        data-acao="{{ url_for('tanques.registrar_trato', tanque_id=tanque.id) }}"
+        data-nome="{{ tanque.nome }}"
+        data-meta="{{ av.calc.total_kg }}"
+        data-falta="{{ av.alimentacao.falta_kg }}"
+        data-refeicao="{{ av.calc.por_refeicao_kg }}"
+        {% if icone_so %}title="Registrar ração" aria-label="Registrar ração em {{ tanque.nome }}"{% endif %}>
+    <i class="fa-solid fa-bowl-food"></i>
+    {% if not icone_so %}Dar ração{% endif %}
+</button>
+{% endif %}
+{% endmacro %}
+
+
+{# Barra de critério (temperatura, alimentação, monitoramento) #}
+
+{% macro criterio(nome, nota, texto) %}
+{% set nv = 'otimo' if nota >= 85 else 'bom' if nota >= 70 else 'atencao' if nota >= 50 else 'critico' %}
+<div class="criterio nv-{{ nv }}">
+    <div class="criterio-topo">
+        <span>{{ nome }}</span>
+        <b>{{ nota }}%</b>
+    </div>
+    <div class="barra"><i style="--p: {{ nota }}"></i></div>
+    <small>{{ texto }}</small>
+</div>
+{% endmacro %}

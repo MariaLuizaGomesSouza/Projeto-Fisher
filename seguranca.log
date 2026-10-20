@@ -1,0 +1,7 @@
+2026-10-20 00:49:44,986 - WARNING - falha_login email=admin@gmail.com ip=127.0.0.1
+2026-10-20 00:49:49,244 - WARNING - falha_login email=admin@gmail.com ip=127.0.0.1
+2026-10-20 00:50:01,145 - WARNING - falha_login email=adm@gmail.com ip=127.0.0.1
+2026-10-20 00:50:14,927 - WARNING - falha_login email=adm@gmail.com ip=127.0.0.1
+2026-10-20 00:50:28,850 - INFO - sucesso_login email=admin@gmail.com ip=127.0.0.1
+2026-10-20 00:52:40,651 - INFO - sucesso_login email=joao@gmail.com ip=127.0.0.1
+2026-10-20 00:54:05,735 - INFO - sucesso_login email=admin@gmail.com ip=127.0.0.1

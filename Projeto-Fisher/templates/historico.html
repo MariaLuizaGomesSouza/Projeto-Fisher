@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% import '_macros.html' as m with context %}
+
+{% block titulo %}Histórico | Fisher{% endblock %}
+
+{% block content %}
+
+<header class="page-head">
+    <div>
+        <h1>Histórico de alterações</h1>
+        <p>Tudo o que foi feito no sistema, do mais recente para o mais antigo.</p>
+    </div>
+</header>
+
+<nav class="chips" aria-label="Filtrar por tipo">
+    <a href="{{ url_for('tanques.historico') }}" class="chip{{ ' ativo' if not tipo }}">Tudo</a>
+    {% for chave, rotulo in ROTULOS_ATIVIDADE.items() %}
+    <a href="{{ url_for('tanques.historico', tipo=chave) }}" class="chip{{ ' ativo' if tipo == chave }}">{{ rotulo }}</a>
+    {% endfor %}
+</nav>
+
+{% if grupos %}
+
+<section class="painel">
+
+    {% for rotulo, itens in grupos %}
+    <h3 class="grupo-dia">{{ rotulo }}</h3>
+    <ul class="linha-tempo">
+        {% for a in itens %}
+        {{ m.evento(a, mostrar_autor=current_user.is_admin) }}
+        {% endfor %}
+    </ul>
+    {% endfor %}
+
+    {% if total >= 300 %}
+    <p class="sub" style="margin-top: 16px;">Mostrando as 300 alterações mais recentes.</p>
+    {% endif %}
+
+</section>
+
+{% else %}
+
+<section class="painel vazio">
+    <strong>Nenhuma alteração encontrada</strong>
+    Quando você cadastrar tanques, biometrias ou tratos, eles aparecem aqui.
+</section>
+
+{% endif %}
+
+{% endblock %}

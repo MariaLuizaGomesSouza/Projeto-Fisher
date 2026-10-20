@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block titulo %}Criar conta | Fisher{% endblock %}
+
+{% block auth_content %}
+
+<div class="auth-container">
+
+    <section class="auth-marca">
+
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Fisher Pro" class="logo-grande">
+
+        <h1>Comece a cuidar melhor dos seus tanques.</h1>
+
+        <p>Crie sua conta em menos de um minuto e cadastre o primeiro tanque.</p>
+
+        <ul class="auth-vantagens">
+            <li><i class="fa-solid fa-bowl-food"></i> Ração calculada por espécie, peso e temperatura</li>
+            <li><i class="fa-solid fa-droplet"></i> Nota de bem-estar de cada tanque</li>
+            <li><i class="fa-solid fa-boxes-stacked"></i> Controle do estoque de ração</li>
+        </ul>
+
+    </section>
+
+    <section class="auth-lado">
+
+        <div class="auth-card">
+
+            <div class="auth-header">
+                <h2>Criar conta</h2>
+                <p>Junte-se ao Projeto Fisher.</p>
+            </div>
+
+            <form method="POST" action="{{ url_for('auth.registrar') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="input-group">
+                    <label for="nome">Nome completo</label>
+                    <div class="input-wrapper">
+                        <i class="fa-regular fa-user"></i>
+                        <input type="text" id="nome" name="nome" placeholder="Seu nome"
+                               autocomplete="name" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="email">E-mail</label>
+                    <div class="input-wrapper">
+                        <i class="fa-regular fa-envelope"></i>
+                        <input type="email" id="email" name="email" placeholder="seu@email.com"
+                               autocomplete="email" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="senha">Senha</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="senha" name="senha" placeholder="Mínimo de 6 caracteres"
+                               minlength="6" autocomplete="new-password" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary auth-btn">Criar conta</button>
+
+            </form>
+
+            <div class="auth-footer">
+                Já tem uma conta?
+                <a href="{{ url_for('auth.login') }}">Entrar</a>
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}

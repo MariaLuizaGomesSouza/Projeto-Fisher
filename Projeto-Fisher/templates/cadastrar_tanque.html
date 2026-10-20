@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block titulo %}Novo tanque | Fisher{% endblock %}
+
+{% block content %}
+
+<a href="{{ url_for('tanques.listar_tanques') }}" class="voltar">
+    <i class="fa-solid fa-arrow-left"></i> Meus tanques
+</a>
+
+<header class="page-head">
+    <div>
+        <h1>Cadastrar novo tanque</h1>
+        <p>Depois de salvar, você já pode registrar a primeira biometria.</p>
+    </div>
+</header>
+
+{% set tanque = none %}
+{% include '_form_tanque.html' %}
+
+{% endblock %}
