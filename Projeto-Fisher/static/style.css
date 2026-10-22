@@ -6,12 +6,12 @@
 
 :root {
     /* Paleta oficial Fisher */
-    --pirarucu: #8F302B;      /* Vermelho Pirarucu - marca, botões, destaques */
-    --amazonico: #292E25;     /* Preto Amazônico - textos, ícones, navegação */
-    --escama-dourada: #C99A43;/* Dourado das Escamas - pesos, gráficos, métricas */
-    --verde-rio: #52654A;     /* Verde Rio - indicadores positivos e produção */
-    --areia: #F4EFE5;         /* Areia Clara - fundo das páginas */
-    --cinza-escama: #D9D2C3;  /* Cinza Escama - bordas, campos, divisórias */
+    --pirarucu: #A3332D;      /* Vermelho Pirarucu - marca, botões, destaques */
+    --amazonico: #1A1F16;     /* Preto Amazônico - textos, ícones, navegação */
+    --escama-dourada: #D4A373;/* Dourado das Escamas - pesos, gráficos, métricas */
+    --verde-rio: #5F7755;     /* Verde Rio - indicadores positivos e produção */
+    --areia: #F5F3EC;         /* Areia Clara - fundo das páginas */
+    --cinza-escama: #E0DBD0;  /* Cinza Escama - bordas, campos, divisórias */
 
     /* Variações derivadas da paleta (tons mais escuros/claros) */
     --pirarucu-escuro: #752622;
@@ -33,10 +33,10 @@
     /* Superfícies e texto */
     --fundo: var(--areia);
     --branco: #FCFAF6;
-    --texto: var(--amazonico);
+    --texto: #2D3328;
     --texto-suave: #6A6E60;
-    --borda: var(--cinza-escama);
-    --borda-suave: #E8E3D8;
+    --borda: rgba(0, 0, 0, 0.06);
+    --borda-suave: rgba(0, 0, 0, 0.03);
     --trilho: #E8E3D8;
     --cabecalho-tabela: #EDE7DA;
 
@@ -46,21 +46,27 @@
     --agua-media: var(--verde-escuro);
     --agua-clara: var(--verde-claro);
 
-    --raio: 14px;
-    --sidebar-width: 248px;
+    --sombra-suave: 0 4px 20px rgba(26, 31, 22, 0.04);
+    --sombra-media: 0 10px 30px rgba(26, 31, 22, 0.08);
+    --sombra-forte: 0 20px 40px rgba(26, 31, 22, 0.12);
 
-    --fonte-titulo: 'Bricolage Grotesque', 'Trebuchet MS', 'Segoe UI', sans-serif;
-    --fonte: 'DM Sans', 'Segoe UI', Roboto, Arial, sans-serif;
+    --raio: 16px;
+    --raio-sm: 10px;
+    --sidebar-width: 260px;
+
+    --fonte-titulo: 'Bricolage Grotesque', sans-serif;
+    --fonte: 'DM Sans', sans-serif;
+
 }
 
 /* Níveis de situação: cor principal, fundo suave e cor para fundos escuros */
 
-.nv-otimo   { --nv: #52654A; --nv-bg: #E0E7DB; --nv-claro: #A8C09A; --w1: #7E9873; --w2: #52654A; }
-.nv-bom     { --nv: #65794F; --nv-bg: #E6EBD9; --nv-claro: #B9CC9A; --w1: #93A97E; --w2: #65794F; }
-.nv-atencao { --nv: #8A6218; --nv-bg: #F3E6C8; --nv-claro: #E3BE73; --w1: #E3BE73; --w2: #C99A43; }
-.nv-critico { --nv: #8F302B; --nv-bg: #F1DAD6; --nv-claro: #E58E85; --w1: #D9776D; --w2: #8F302B; }
-.nv-info    { --nv: #52654A; --nv-bg: #E0E7DB; --nv-claro: #A8C09A; }
-.nv-vazio   { --nv: #7A7568; --nv-bg: #E8E3D8; --nv-claro: #BDB8A9; --w1: #C9C4B5; --w2: #A39E8F; }
+.nv-otimo   { --nv: #4CAF50; --nv-bg: #E8F5E9; --nv-claro: #A5D6A7; }
+.nv-bom     { --nv: #8BC34A; --nv-bg: #F1F8E9; --nv-claro: #C5E1A5; }
+.nv-atencao { --nv: #FF9800; --nv-bg: #FFF3E0; --nv-claro: #FFCC80; }
+.nv-critico { --nv: #F44336; --nv-bg: #FFEBEE; --nv-claro: #EF9A9A; }
+.nv-info    { --nv: #2196F3; --nv-bg: #E3F2FD; --nv-claro: #90CAF9; }
+.nv-vazio   { --nv: #9E9E9E; --nv-bg: #F5F5F5; --nv-claro: #E0E0E0; }
 
 
 /* =========================================================
@@ -74,22 +80,21 @@ html { -webkit-text-size-adjust: 100%; }
 body {
     font-family: var(--fonte);
     font-size: 15px;
-    line-height: 1.5;
+    line-height: 1.6;
     background: var(--fundo);
     color: var(--texto);
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
 }
 
-h1, h2, h3 { font-family: var(--fonte-titulo); line-height: 1.15; }
-
-a { color: inherit; }
-
+h1, h2, h3, h4 { font-family: var(--fonte-titulo); line-height: 1.2; letter-spacing: -0.02em; }
+a { color: inherit; text-decoration: none; transition: 0.2s; }
 button, input, select, textarea { font: inherit; color: inherit; }
 
 :focus-visible {
-    outline: 3px solid var(--laranja);
-    outline-offset: 2px;
-    border-radius: 6px;
+outline: 2px solid var(--escama-dourada);
+outline-offset: 2px;
+border-radius: 6px;
 }
 
 .so-leitor {
@@ -102,25 +107,27 @@ button, input, select, textarea { font: inherit; color: inherit; }
    ESTRUTURA E MENU LATERAL
    ========================================================= */
 
-.dashboard-container { min-height: 100vh; display: flex; }
+.dashboard-container { display: flex; min-height: 100vh; }
 
 .sidebar {
-    position: fixed; inset: 0 auto 0 0;
-    width: var(--sidebar-width);
-    display: flex; flex-direction: column;
-    padding: 22px 14px 16px;
-    background: var(--amazonico);
-    color: var(--areia);
-    box-shadow: 3px 0 18px rgba(41, 46, 37, 0.18);
-    z-index: 20;
+position: fixed; inset: 0 auto 0 0;
+width: var(--sidebar-width);
+display: flex; flex-direction: column;
+padding: 24px 16px;
+background: linear-gradient(170deg, var(--amazonico) 0%, #0F130C 100%);
+color: #FFFFFF;
+box-shadow: 4px 0 24px rgba(0,0,0,0.1);
+z-index: 20;
 }
 
 .logo {
-    display: block; margin-bottom: 6px; padding: 10px 12px;
-    background: var(--areia); border-radius: 14px;
+    display: block; 
+    margin-bottom: 16px; 
+    padding: 10px;
+    background: transparent; /* Garante que não há fundo claro da classe */
 }
 
-.logo-img { width: 100%; height: auto; display: block; }
+.logo h2 { color: var(--areia); font-size: 22px; font-weight: 700; }
 
 .menu { display: flex; flex-direction: column; gap: 4px; margin-top: 16px; }
 
@@ -138,13 +145,15 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .menu a:hover { background: rgba(244, 239, 229, .1); transform: translateX(2px); }
 
 .menu a.ativo {
-    background: var(--areia);
-    color: var(--pirarucu);
+    background: rgba(255, 255, 255, 0.08); /* Fundo escuro levemente transparente */
+    color: #fff; /* Mantém o texto branco/claro */
     font-weight: 700;
     transform: none;
+    border-left: 3px solid var(--escama-dourada); /* Uma linha dourada elegante à esquerda */
+    border-radius: 0 10px 10px 0; /* Arredonda só o lado direito */
 }
 
-.menu a.ativo i { color: var(--pirarucu); }
+.menu a.ativo i { color: var(--escama-dourada); /* O ícone fica dourado para destacar */}
 
 .menu-sair { margin-top: auto; }
 
@@ -460,7 +469,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
    LISTA DE TANQUES NO PAINEL
    ========================================================= */
 
-.lista-tanques { display: flex; flex-direction: column; }
+.lista-tanques { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
 
 .linha-tanque {
     display: grid; grid-template-columns: minmax(0, 1.3fr) 92px minmax(120px, 1fr) auto;

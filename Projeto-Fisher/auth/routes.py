@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from extensions import db
-from models import User
+from models import User, Tanque
 from functools import wraps
 from flask import abort
 from flask_login import current_user
@@ -14,7 +14,7 @@ def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not current_user.is_authenticated or not current_user.is_admin:
-            abort(403)  # Retorna erro HTTP 403 (Proibido)
+            abort(403)
         return f(*args, **kwargs)
     return decorated_function
 
@@ -23,7 +23,15 @@ def admin_required(f):
 @admin_required
 def listar_usuarios():
     usuarios = User.query.all()
-    return render_template('admin_usuarios.html', usuarios=usuarios)
+    
+    # Cálculo das métricas esperadas pelo template
+    stats = {
+        'total_usuarios': len(usuarios),
+        'total_admins': User.query.filter_by(is_admin=True).count(),
+        'total_tanques': Tanque.query.count()
+    }
+    
+    return render_template('admin_usuarios.html', usuarios=usuarios, stats=stats)
 
 @auth_bp.route('/admin/usuarios/<int:user_id>/toggle-admin', methods=['POST'])
 @login_required
@@ -31,7 +39,6 @@ def listar_usuarios():
 def alternar_admin(user_id):
     usuario = User.query.get_or_404(user_id)
     
-    # Evita que o próprio admin remova as suas permissões
     if usuario.id == current_user.id:
         flash('Você não pode alterar a sua própria permissão de administrador.', 'erro')
         return redirect(url_for('auth.listar_usuarios'))

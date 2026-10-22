@@ -6,12 +6,12 @@ from flask import (
     Blueprint, Response, flash, jsonify, redirect, render_template,
     request, url_for
 )
-from flask_login import current_user, login_required
+from flask_login import current_user, login_required, UserMixin
 from sqlalchemy import func
 
 import racao
 from extensions import db
-from models import Biometria, RegistroTrato, Tanque
+from models import User, Biometria, RegistroTrato, Tanque
 from servicos import (
     avaliar, consumo_semana, ler_formulario_tanque, listar_atividades,
     obter_estoque, obter_tanque, registrar_atividade,
@@ -829,3 +829,96 @@ def api_simular(tanque_id):
     calc['temp_ideal'] = list(calc['temp_ideal'])
 
     return jsonify(calc)
+
+@tanques_bp.route('/admin')
+@login_required
+def admin_dashboard():
+    if not current_user.is_admin:
+        flash("Acesso negado. Esta área é restrita a administradores.", "erro")
+        return redirect(url_for('dashboard'))
+    
+    # Procura todos os utilizadores e calcula estatísticas
+    usuarios = User.query.order_by(User.id.desc()).all()
+    
+    stats = {
+        'total_usuarios': len(usuarios),
+        'total_admins': sum(1 for u in usuarios if u.is_admin),
+        'total_tanques': Tanque.query.count()
+    }
+    
+    return render_template('admin_usuarios.html', usuarios=usuarios, stats=stats)
+
+@tanques_bp.route('/admin/usuario/<int:user_id>/alternar-admin', methods=['POST'])
+@login_required
+def admin_alternar_admin(user_id):
+    if not current_user.is_admin:
+        flash("Acesso negado.", "erro")
+        return redirect(url_for('dashboard'))
+
+    usuario = db.get_or_404(User, user_id)
+
+    # Proteção: não podes tirar o teu próprio acesso de admin
+    if usuario.id == current_user.id:
+        flash("Não podes alterar as tuas próprias permissões de administrador.", "erro")
+        return redirect(url_for('tanques.admin_dashboard'))
+
+    usuario.is_admin = not usuario.is_admin
+    db.session.commit()
+
+    status = "promovido a Administrador" if usuario.is_admin else "rebaixado a Utilizador Padrão"
+    flash(f"O utilizador {usuario.nome} foi {status} com sucesso!", "sucesso")
+    
+    return redirect(url_for('tanques.admin_dashboard'))
+
+
+@tanques_bp.route('/admin/usuario/<int:user_id>/editar', methods=['POST'])
+@login_required
+def admin_editar_usuario(user_id):
+    if not current_user.is_admin:
+        flash("Acesso negado.", "erro")
+        return redirect(url_for('dashboard'))
+
+    usuario = db.get_or_404(User, user_id)
+    novo_nome = request.form.get('nome', '').strip()
+    novo_email = request.form.get('email', '').strip().lower()
+
+    if not novo_nome or not novo_email:
+        flash("Nome e e-mail não podem estar vazios.", "erro")
+        return redirect(url_for('tanques.admin_dashboard'))
+
+    # Verifica se o email já pertence a outro utilizador
+    existente = User.query.filter(User.email == novo_email, User.id != usuario.id).first()
+    if existente:
+        flash("Este e-mail já está em uso por outro utilizador.", "erro")
+        return redirect(url_for('tanques.admin_dashboard'))
+
+    usuario.nome = novo_nome
+    usuario.email = novo_email
+    db.session.commit()
+
+    flash(f"Dados do utilizador {usuario.nome} atualizados com sucesso!", "sucesso")
+    return redirect(url_for('tanques.admin_dashboard'))
+
+
+@tanques_bp.route('/admin/usuario/<int:user_id>/deletar', methods=['POST'])
+@login_required
+def admin_deletar_usuario(user_id):
+    if not current_user.is_admin:
+        flash("Acesso negado.", "erro")
+        return redirect(url_for('dashboard'))
+
+    usuario = db.get_or_404(User, user_id)
+
+    # Proteção: impede apagar a própria conta logada
+    if usuario.id == current_user.id:
+        flash("Não podes eliminar a tua própria conta enquanto estás ligado!", "erro")
+        return redirect(url_for('tanques.admin_dashboard'))
+
+    # Apaga também os tanques associados ao utilizador
+    Tanque.query.filter_by(user_id=usuario.id).delete()
+
+    db.session.delete(usuario)
+    db.session.commit()
+
+    flash(f"Utilizador '{usuario.nome}' e os seus tanques foram eliminados com sucesso.", "sucesso")
+    return redirect(url_for('tanques.admin_dashboard'))

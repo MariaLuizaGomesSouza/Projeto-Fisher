@@ -26,7 +26,7 @@ python app.py
 
 - A primeira conta criada num sistema **sem nenhum administrador** vira administradora automaticamente.
 - Para promover uma conta que já existe: `flask --app app promover-admin email@exemplo.com`
-- Admin padrão: `flask --app app init-admin` (cria `adm@gmail.com`; troque a senha depois).
+- Admin padrão: `flask --app app init-admin` (cria `admin@gmail.com`; troque a senha depois).
 - Depois disso, o admin promove/rebaixa pelo menu **Painel Admin**.
 
 ### Banco de dados

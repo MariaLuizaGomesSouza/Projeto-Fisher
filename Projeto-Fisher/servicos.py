@@ -17,7 +17,7 @@ from utils import agora, numero
 ICONES_ATIVIDADE = {
     'tanque': 'fa-water',
     'biometria': 'fa-scale-balanced',
-    'trato': 'fa-bowl-food',
+    'trato': 'fa-utensils',
     'estoque': 'fa-boxes-stacked',
     'mortalidade': 'fa-heart-crack',
 }

@@ -1,52 +1,150 @@
 {% extends "base.html" %}
 
-{% block titulo %}Painel Admin | Fisher{% endblock %}
+{% block title %}Administração - Fisher{% endblock %}
 
 {% block content %}
 <header class="page-head">
     <div>
-        <h1>Gestão de Utilizadores</h1>
-        <p>Ações administrativas e controlo de permissões do sistema.</p>
+        <h1>Painel de Administração</h1>
+        <p>Gestão de utilizadores, acessos e estatísticas do sistema Fisher.</p>
     </div>
 </header>
 
-<div class="table-container">
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>E-mail</th>
-                <th>Nível de Acesso</th>
-                <th class="num">Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for u in usuarios %}
-            <tr>
-                <td>{{ u.id }}</td>
-                <td><b>{{ u.nome }}</b></td>
-                <td>{{ u.email }}</td>
-                <td>
-                    {% if u.is_admin %}
-                    <span class="pill nv-otimo">Administrador</span>
-                    {% else %}
-                    <span class="pill nv-info">Produtor</span>
-                    {% endif %}
-                </td>
-                <td class="num">
-                    {% if u.id != current_user.id %}
-                    <form action="{{ url_for('auth.alternar_admin', user_id=u.id) }}" method="POST" style="display:inline;">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" class="btn btn-secondary">
-                            {{ 'Rebaixar' if u.is_admin else 'Tornar Admin' }}
+<!-- INDICADORES / MÉTRICAS -->
+<section class="indicadores">
+    <div class="indicador">
+        <span>Total de Utilizadores</span>
+        <strong>{{ stats.total_usuarios }} <small>contas</small></strong>
+    </div>
+    <div class="indicador">
+        <span>Administradores</span>
+        <strong>{{ stats.total_admins }} <small>ativos</small></strong>
+    </div>
+    <div class="indicador">
+        <span>Tanques Criados</span>
+        <strong>{{ stats.total_tanques }} <small>no total</small></strong>
+    </div>
+</section>
+
+<!-- TABELA DE UTILIZADORES -->
+<section class="painel" style="margin-top: 24px;">
+    <div class="painel-titulo">
+        <h2>Utilizadores Cadastrados</h2>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                    <th>Tipo de Acesso</th>
+                    <th style="text-align: right;">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in usuarios %}
+                <tr>
+                    <td class="celula-nome">
+                        <b>{{ u.nome }}</b>
+                        {% if u.id == current_user.id %}
+                        <small style="color: var(--verde-rio);">(Sua conta atual)</small>
+                        {% endif %}
+                    </td>
+                    <td>{{ u.email }}</td>
+                    <td>
+                        {% if u.is_admin %}
+                        <span class="pill" style="background: var(--dourado-claro); color: var(--dourado-texto);">
+                            <i>🛡️</i> Admin
+                        </span>
+                        {% else %}
+                        <span class="pill" style="background: var(--verde-claro); color: var(--verde-escuro);">
+                            <i>👤</i> Utilizador
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="acoes" style="justify-content: flex-end; gap: 8px;">
+                        
+                        <!-- Alterar Cargo (Promover/Rebaixar) -->
+                        {% if u.id != current_user.id %}
+                        <form action="{{ url_for('tanques.admin_alternar_admin', user_id=u.id) }}" method="POST" style="display:inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+                            <button type="submit" class="btn-icone" title="{% if u.is_admin %}Rebaixar a Utilizador{% else %}Promover a Admin{% endif %}">
+                                {% if u.is_admin %}⬇️{% else %}⭐{% endif %}
+                            </button>
+                        </form>
+                        {% endif %}
+
+                        <!-- Botão Editar Dados -->
+                        <button type="button" class="btn-icone" title="Editar Utilizador" 
+                                onclick="abrirModalEditar('{{ u.id }}', '{{ u.nome }}', '{{ u.email }}')">
+                            ✏️
                         </button>
-                    </form>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+
+                        <!-- Eliminar Utilizador -->
+                        {% if u.id != current_user.id %}
+                        <form action="{{ url_for('tanques.admin_deletar_usuario', user_id=u.id) }}" method="POST" style="display:inline;"
+                              onsubmit="return confirm('Tem a certeza que deseja apagar o perfil de {{ u.nome }}? Todos os tanques desta conta também serão eliminados!');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+                            <button type="submit" class="btn-icone perigo" title="Eliminar Perfil">
+                                🗑️
+                            </button>
+                        </form>
+                        {% endif %}
+
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" class="empty-message">Nenhum utilizador encontrado.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- DIÁLOGO / MODAL DE EDIÇÃO DE UTILIZADOR -->
+<dialog id="dlg-editar-user">
+    <div class="dialogo-corpo">
+        <h2>Editar Utilizador</h2>
+        <form id="form-editar-user" method="POST" action="">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+            
+            <div class="form-group" style="margin-bottom: 14px;">
+                <label for="edit-nome">Nome Completo</label>
+                <input type="text" id="edit-nome" name="nome" required>
+            </div>
+
+            <div class="form-group">
+                <label for="edit-email">E-mail</label>
+                <input type="email" id="edit-email" name="email" required>
+            </div>
+
+            <div class="dialogo-rodape" style="padding-right: 0; padding-bottom: 0;">
+                <button type="button" class="btn btn-secondary" onclick="document.getElementById('dlg-editar-user').close()">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+            </div>
+        </form>
+    </div>
+</dialog>
+
+<script>
+function abrirModalEditar(id, nome, email) {
+    const dlg = document.getElementById('dlg-editar-user');
+    const form = document.getElementById('form-editar-user');
+    
+    // Define a rota de destino da ação do formulário
+    form.action = '/admin/usuario/' + id + '/editar';
+    
+    document.getElementById('edit-nome').value = nome;
+    document.getElementById('edit-email').value = email;
+    
+    if (typeof dlg.showModal === 'function') {
+        dlg.showModal();
+    } else {
+        dlg.setAttribute('open', '');
+    }
+}
+</script>
 {% endblock %}

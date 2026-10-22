@@ -147,7 +147,7 @@
 
         <div class="medidor nv-{{ 'atencao' if p.racao_pct > 115 else 'info' }}">
             <div class="medidor-topo">
-                <span class="medidor-nome"><i class="fa-solid fa-bowl-food"></i> Ração fornecida hoje</span>
+                <span class="medidor-nome"><i class="fa-solid fa-utensils"></i> Ração fornecida hoje</span>
                 <span class="medidor-valor">{{ p.racao_pct }}%<small>da meta</small></span>
             </div>
             <div class="barra"><i style="--p: {{ [p.racao_pct, 100]|min }}"></i></div>
@@ -304,33 +304,6 @@
             <div class="tudo-certo">
                 <i class="fa-solid fa-circle-check"></i>
                 Tudo em ordem. Nenhum alerta no momento.
-            </div>
-
-            {% endif %}
-
-        </section>
-
-
-        <section class="painel">
-
-            <div class="painel-titulo">
-                <h2>Últimas alterações</h2>
-                <a href="{{ url_for('tanques.historico') }}">Ver histórico</a>
-            </div>
-
-            {% if atividades %}
-
-            <ul class="linha-tempo">
-                {% for a in atividades %}
-                {{ m.evento(a, mostrar_autor=current_user.is_admin) }}
-                {% endfor %}
-            </ul>
-
-            {% else %}
-
-            <div class="vazio">
-                <strong>Nada por aqui ainda</strong>
-                Cada tanque, biometria, trato ou reposição de ração vai aparecer nesta lista.
             </div>
 
             {% endif %}

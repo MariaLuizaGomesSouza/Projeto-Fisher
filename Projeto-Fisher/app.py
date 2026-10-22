@@ -1,6 +1,8 @@
 import os
 import click
+from flask.cli import with_appcontext
 from flask import Flask, render_template
+from flask_sqlalchemy import SQLAlchemy
 from flask_login import current_user, login_required
 from sqlalchemy import inspect, text
 from werkzeug.security import generate_password_hash
@@ -162,6 +164,8 @@ def create_app():
     # PAINEL CENTRAL
     # -----------------------------------------------------
 
+    # (O código do app.py original continua aqui em cima...)
+    
     @app.route('/')
     @login_required
     def dashboard():
@@ -182,72 +186,40 @@ def create_app():
             primeiro_nome=current_user.nome.split()[0]
         )
 
-    # -----------------------------------------------------
-    # COMANDOS DE ADMINISTRADOR (terminal)
-    # -----------------------------------------------------
-
-    @app.cli.command('init-admin')
-    def init_admin():
-        """Cria ou atualiza o administrador padrão (adm@gmail.com)."""
-        email_admin = 'adm@gmail.com'
-        senha_admin = 'Adm123456'
-
-        admin = User.query.filter_by(email=email_admin).first()
-
-        if not admin:
-            admin = User(
-                nome='Administrador',
-                email=email_admin,
-                senha=generate_password_hash(senha_admin),
-                is_admin=True
-            )
-            db.session.add(admin)
-            click.echo('Administrador padrão (adm@gmail.com) criado!')
-        else:
-            admin.is_admin = True
-            admin.senha = generate_password_hash(senha_admin)
-            click.echo('Administrador padrão (adm@gmail.com) atualizado!')
-
-        db.session.commit()
-
-    @app.cli.command('promover-admin')
-    @click.argument('email')
-    def promover_admin(email):
-        """Transforma uma conta que já existe em administrador."""
-        usuario = User.query.filter_by(email=email.strip().lower()).first()
-
-        if not usuario:
-            click.echo(f'Nenhuma conta encontrada com o e-mail {email}.')
-            return
-
-        usuario.is_admin = True
-        db.session.commit()
-        click.echo(f'{usuario.nome} ({usuario.email}) agora é administrador.')
-
-    @app.cli.command('criar-admin')
-    def criar_admin():
-        """Cria um usuário administrador pelo terminal."""
-        nome = click.prompt('Nome do Administrador')
-        email = click.prompt('E-mail').strip().lower()
-        senha = click.prompt('Senha', hide_input=True)
-
-        if User.query.filter_by(email=email).first():
-            click.echo('Erro: e-mail já cadastrado!')
-            return
-
-        db.session.add(User(
-            nome=nome,
-            email=email,
-            senha=generate_password_hash(senha),
-            is_admin=True
-        ))
-        db.session.commit()
-        click.echo('Administrador criado com sucesso!')
-
-    with app.app_context():
-        atualizar_banco(app)
-
+    # Regista o comando na aplicação correta
+    app.cli.add_command(init_admin)
+    
     return app
+
+
+# -----------------------------------------------------
+# COMANDOS DE ADMINISTRADOR (terminal)
+# -----------------------------------------------------
+
+@click.command('init-admin')
+@with_appcontext
+def init_admin():
+    """Cria ou atualiza o administrador padrão."""
+    from app import db, User # Importa aqui para evitar dependências circulares
+    
+    email_admin = 'admin@gmail.com'
+    senha_admin = 'Admin@123'
+    admin = User.query.filter_by(email=email_admin).first()
+
+    if not admin:
+        admin = User(
+            nome='Administrador',
+            email=email_admin,
+            senha=generate_password_hash(senha_admin),
+            is_admin=True
+        )
+        db.session.add(admin)
+        click.echo('Administrador padrão criado!')
+    else:
+        admin.is_admin = True
+        click.echo('Conta atualizada para administrador!')
+
+    db.session.commit()
 
 
 if __name__ == '__main__':
