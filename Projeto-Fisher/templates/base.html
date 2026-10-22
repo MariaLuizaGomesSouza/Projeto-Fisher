@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{% block titulo %}Projeto Fisher{% endblock %}</title>
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo-oficial.png') }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -58,7 +58,7 @@
         <aside class="sidebar">
 
             <div class="logo">
-                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Fisher Pro" class="logo-img">
+                <img src="{{ url_for('static', filename='img/logo-oficial.png') }}" alt="Fisher Pro" class="logo-img">
             </div>
 
             <nav class="menu" aria-label="Menu principal">

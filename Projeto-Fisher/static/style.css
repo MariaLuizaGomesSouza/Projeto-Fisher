@@ -121,10 +121,18 @@ z-index: 20;
 }
 
 .logo {
-    display: block; 
-    margin-bottom: 16px; 
+    display: block;
+    margin-bottom: 16px;
     padding: 10px;
-    background: transparent; /* Garante que não há fundo claro da classe */
+    background: transparent;
+    max-width: 100%; /* Garante que não passa da largura da sidebar */
+}
+
+.logo-img {
+    width: 100%;
+    max-width: 160px; /* Controla o tamanho máximo do logotipo */
+    height: auto;
+    display: block;
 }
 
 .logo h2 { color: var(--areia); font-size: 22px; font-weight: 700; }
